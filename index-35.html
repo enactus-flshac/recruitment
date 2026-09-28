@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enactus FLSH Ain Chock — Recruitment Form</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: { ink: '#F9FAFB', panel: '#FFFFFF', navy: '#0F172A', gold: '#FFC800', goldlight: '#B45309' },
+        fontFamily: {
+          display: ['"Playfair Display"', 'serif'],
+          sans: ['Inter', '"Tajawal"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        },
+      },
+    },
+  };
+</script>
+<style>
+  :root { color-scheme: light; }
+  * { scrollbar-color: #FFC800 #F1F5F9; }
+  body { background: #F9FAFB; }
+
+  .gold-text { background: linear-gradient(100deg, #92400E 0%, #B45309 45%, #78350F 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .glass { background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+
+  .field { width: 100%; background: #FFFFFF; border: 1px solid #CBD5E1; color: #0F172A; border-radius: .7rem; padding: .7rem .9rem; font-size: .95rem; transition: border-color .2s ease, box-shadow .2s ease, background .2s ease; }
+  .field::placeholder { color: rgba(15,23,42,.35); }
+  .field:hover { border-color: rgba(255,200,0,.55); }
+  .field:focus { outline: none; border-color: #FFC800; box-shadow: 0 0 0 3px rgba(255,200,0,.25); background: #FFFFFF; }
+  .field.err { border-color: rgba(220,38,38,.75); box-shadow: 0 0 0 3px rgba(220,38,38,.12); }
+  select.field { color-scheme: light; }
+  .field-msg { color: #DC2626; font-size: .78rem; margin-top: .35rem; min-height: 1rem; }
+
+  .btn-submit { background: #FFC800; color: #0F172A; transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease; }
+  .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 10px 30px -8px rgba(255,200,0,.55); background-color: #E6B400; }
+  .btn-submit:active { transform: translateY(0); }
+  .btn-submit:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+  .rule { height: 1px; background: linear-gradient(90deg, rgba(255,200,0,.9), rgba(255,200,0,0)); }
+
+  .reveal { animation: reveal .7s cubic-bezier(.2,.7,.2,1) both; }
+  @keyframes reveal { from { opacity:0; transform:translateY(14px);} to { opacity:1; transform:translateY(0);} }
+  .modal-panel { animation: pop .32s cubic-bezier(.2,.8,.2,1) both; }
+  @keyframes pop { from { opacity:0; transform:scale(.94) translateY(8px);} to { opacity:1; transform:scale(1) translateY(0);} }
+  @media (prefers-reduced-motion: reduce) { .reveal, .modal-panel, .tick { animation: none !important; } .progress-fill, .leader-fill { transition: none !important; } .faq-answer, .faq-chevron { transition: none !important; } }
+
+  /* ---- FAQ accordion ---- */
+  .faq-item { background: rgba(255,255,255,.5); }
+  .faq-question { cursor: pointer; background: none; border: none; font: inherit; color: inherit; }
+  .faq-answer { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .3s ease; }
+  .faq-answer > div { overflow: hidden; }
+  .faq-chevron { transition: transform .3s ease; }
+
+  /* ---- Recruitment timeline / process steps ---- */
+  .step-circle {
+    width: 34px; height: 34px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: .8rem;
+    background: #fff; color: rgba(15,23,42,.35);
+    border: 2px solid rgba(15,23,42,.12);
+  }
+  .step-circle-active {
+    background: #FFC800; color: #0F172A; border-color: #FFC800;
+    animation: stepGlow 2s ease-in-out infinite;
+  }
+  .step-circle-done {
+    background: #16A34A; color: #fff; border-color: #16A34A;
+  }
+  @keyframes stepGlow {
+    0%, 100% { box-shadow: 0 0 0 4px rgba(255,200,0,.22), 0 0 10px rgba(255,200,0,.45); }
+    50% { box-shadow: 0 0 0 6px rgba(255,200,0,.3), 0 0 20px rgba(255,200,0,.7); }
+  }
+  .step-pulse-dot {
+    width: 7px; height: 7px; border-radius: 50%; background: #FFC800; flex-shrink: 0;
+    animation: stepPulse 1.6s ease-in-out infinite;
+  }
+  @keyframes stepPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.5); opacity: .5; }
+  }
+  .step-connector { position: absolute; background: rgba(15,23,42,.12); z-index: 0; }
+  .step-connector-v { left: 17px; top: 17px; bottom: 17px; width: 2px; }
+  .step-connector-h { left: 12.5%; right: 12.5%; top: 17px; height: 2px; }
+  @media (prefers-reduced-motion: reduce) { .step-circle-active, .step-pulse-dot { animation: none !important; } }
+
+  /* ---- Footer social icons ---- */
+  .social-btn {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    border: 1.5px solid rgba(15,23,42,.15);
+    color: rgba(15,23,42,.7);
+    transition: background-color .2s ease, color .2s ease, border-color .2s ease, transform .2s ease;
+  }
+  .social-btn:hover { background: #FFC800; color: #0F172A; border-color: #FFC800; transform: translateY(-2px); }
+
+  /* ---- WhatsApp community notice card ---- */
+  .whatsapp-card { background: rgba(37, 211, 102, .06); border: 1px solid rgba(37, 211, 102, .35); border-inline-start: 4px solid #25D366; }
+
+  /* ---- Live activity toast ---- */
+  .toast-live-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: #22C55E; flex-shrink: 0;
+    animation: stepPulse 1.5s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) { .toast-live-dot { animation: none !important; } #liveToast { transition: none !important; } }
+
+  input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible { outline: 2px solid #E6B400; outline-offset: 2px; }
+
+  .lang-btn { padding: .35rem .75rem; border-radius: 999px; font-size: .78rem; border: 1px solid #E2E8F0; color: #475569; transition: all .18s ease; white-space: nowrap; cursor: pointer; background: #FFFFFF; }
+  .lang-btn.active { background: #FFC800; color:#0F172A; border-color: transparent; font-weight: 600; }
+  .lang-btn:hover:not(.active) { border-color: #FFC800; color:#0F172A; }
+
+  .announce-banner { background: linear-gradient(100deg,#FFE866,#FFC800); border-bottom: 2px solid #0F172A; }
+
+  .wave-divider { display: block; width: 100%; height: 14px; line-height: 0; }
+
+  @keyframes tickPulse { 0% { transform: scale(1);} 30% { transform: scale(1.14);} 100% { transform: scale(1);} }
+  .tick { animation: tickPulse .35s ease; }
+
+  .progress-track, .leader-track { background: #E2E8F0; border-radius: 999px; overflow: hidden; }
+  .progress-fill, .leader-fill { height: 100%; border-radius: 999px; width: 0%; transition: width 3s cubic-bezier(0.25, 1, 0.5, 1); background: linear-gradient(90deg,#FFC800,#FFDD55); will-change: width; }
+  .gender-fill-f { background: linear-gradient(90deg,#F472A0,#FBC2D8) !important; }
+  .gender-fill-m { background: linear-gradient(90deg,#3B9FE0,#A8D8F7) !important; }
+
+  .dept-chip { display:flex; align-items:center; gap:.75rem; cursor:pointer; }
+  .dept-chip input[type="checkbox"] { width:1.05rem; height:1.05rem; accent-color:#FFC800; flex-shrink:0; cursor:pointer; }
+  .dept-chip.active { border-color:#FFC800; box-shadow:0 0 0 3px rgba(255,200,0,.2); background:rgba(255,200,0,.08); }
+  .dept-chip.disabled { opacity:.4; cursor:not-allowed; }
+  .dept-chip.disabled input[type="checkbox"] { cursor:not-allowed; }
+  #deptOptions.err-group .dept-chip { border-color: rgba(220,38,38,.75); }
+
+  /* ---- Enactus-style icon badges (leaderboard + gender rows) ---- */
+  /* .enactus-icon-badge is an alias of .icon-badge — both classes are applied
+     together on every badge, so either selector on its own will style it. */
+  .icon-badge, .enactus-icon-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 32%, #FFDA4D 0%, #FFC800 60%, #F0B400 100%);
+    box-shadow: 0 2px 6px rgba(230, 164, 0, 0.25);
+  }
+  .icon-badge svg, .enactus-icon-badge svg { width: 40px; height: 40px; color: #0F172A; stroke-width: 1.5px; overflow: visible; }
+  @media (min-width: 640px) {
+    .icon-badge, .enactus-icon-badge { width: 40px; height: 40px; }
+    .icon-badge svg, .enactus-icon-badge svg { width: 46px; height: 46px; }
+  }
+</style>
+</head>
+<body class="bg-ink text-navy font-sans antialiased min-h-screen relative">
+
+  <div class="pointer-events-none fixed inset-0 overflow-hidden z-0">
+    <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-[36rem] h-[36rem] rounded-full bg-gold/10 blur-[120px]"></div>
+    <div class="absolute bottom-0 right-0 w-[28rem] h-[28rem] rounded-full bg-sky-200/20 blur-[110px]"></div>
+  </div>
+
+  <!-- Language switcher -->
+  <div class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-slate-200">
+    <div class="max-w-2xl mx-auto px-4 py-2 flex items-center justify-center gap-2">
+      <button type="button" class="lang-btn" data-lang="en">🇬🇧 English</button>
+      <button type="button" class="lang-btn" data-lang="ar">🇲🇦 العربية</button>
+      <button type="button" class="lang-btn" data-lang="fr">🇫🇷 Français</button>
+    </div>
+    <svg class="wave-divider" viewBox="0 0 1200 14" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="waveGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#FFC800"/>
+          <stop offset="35%" stop-color="#FF8A00"/>
+          <stop offset="65%" stop-color="#FF2D55"/>
+          <stop offset="100%" stop-color="#2FA8E0"/>
+        </linearGradient>
+      </defs>
+      <path d="M0,6 C150,14 300,0 450,6 C600,12 750,0 900,6 C1000,10 1100,2 1200,6 L1200,14 L0,14 Z" fill="url(#waveGrad)"/>
+    </svg>
+  </div>
+
+  <!-- Official registration closed / waitlist announcement banner -->
+  <div class="announce-banner relative z-30">
+    <div class="max-w-2xl mx-auto px-4 py-4 text-center">
+      <p id="announcementTitle" class="font-bold text-sm sm:text-base text-navy"></p>
+      <p id="announcementSubtext" class="text-xs sm:text-sm text-navy/70 mt-1.5 max-w-md mx-auto"></p>
+    </div>
+  </div>
+
+  <main class="relative z-10 mx-auto max-w-2xl px-4 sm:px-6 py-10">
+
+    <header class="reveal text-center mb-8">
+      <div class="relative mx-auto mb-6 w-24 h-24 sm:w-28 sm:h-28">
+        <div class="absolute inset-0 rounded-full bg-gold/30 blur-2xl"></div>
+        <img src="data:image/jpeg;base64,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" alt="Enactus FLSH Ain Chock logo" class="relative w-full h-full object-contain rounded-full ring-1 ring-gold/50 bg-white p-2 shadow-sm">
+      </div>
+      <h1 class="font-display text-3xl sm:text-4xl font-black text-navy">Enactus FLSH Ain Chock</h1>
+      <p id="subtitleText" class="mt-2 text-goldlight font-semibold"></p>
+      <p id="sloganText" class="mt-3 text-sm text-navy/55 max-w-sm mx-auto"></p>
+    </header>
+
+    <!-- Intro video -->
+    <section id="introVideoSection" class="reveal glass rounded-2xl p-5 sm:p-6 mb-6 border-t-2 border-gold/60" style="animation-delay:.03s">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="rule w-8"></span>
+        <h2 data-i18n="introVideoTitle" class="text-navy/90 font-semibold tracking-wide text-sm"></h2>
+      </div>
+      <div class="aspect-video w-full overflow-hidden rounded-xl shadow-md">
+        <iframe class="w-full h-full rounded-xl" src="https://www.youtube.com/embed/FLukxZgk6Lw" title="Enactus Morocco Intro" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+      </div>
+    </section>
+
+    <!-- Progress bar -->
+    <section id="progressSection" class="reveal glass rounded-2xl p-5 sm:p-6 mb-6" style="animation-delay:.05s">
+      <div class="flex items-center justify-between mb-2">
+        <span id="progressLabel" class="text-sm font-semibold text-goldlight"></span>
+      </div>
+      <div class="progress-track h-3">
+        <div id="progressFill" class="progress-fill"></div>
+      </div>
+      <p id="progressSubtext" class="text-xs text-navy/50 mt-2"></p>
+    </section>
+
+    <!-- Leaderboard & stats -->
+    <section id="statsSection" class="reveal glass rounded-2xl p-5 sm:p-6 mb-6" style="animation-delay:.1s">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="rule w-8"></span>
+        <h2 id="leaderboardTitle" class="text-navy/90 font-semibold tracking-wide text-sm"></h2>
+      </div>
+      <div id="leaderboardList" class="space-y-3"></div>
+
+      <div class="flex items-center gap-3 mt-6 mb-4">
+        <span class="rule w-8"></span>
+        <h2 id="genderTitle" class="text-navy/90 font-semibold tracking-wide text-sm"></h2>
+      </div>
+      <div class="space-y-3">
+        <div>
+          <div class="flex items-center justify-between text-xs text-navy/70 mb-1">
+            <span class="flex items-center gap-2">
+              <span class="icon-badge enactus-icon-badge" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="8" r="4"/>
+                  <path d="M7 21l1-6.5a4.5 4.5 0 0 1 8 0L17 21z"/>
+                  <path d="M21 -0.1 L21.735 1.265 L23.1 2 L21.735 2.735 L21 4.1 L20.265 2.735 L18.9 2 L20.265 1.265 Z" fill="currentColor" stroke="none"/>
+                  <circle cx="-1" cy="20" r="0.8" fill="currentColor" stroke="none"/>
+                </svg>
+              </span>
+              <span id="genderFemaleLabel"></span>
+            </span>
+            <span id="genderPercentF" class="font-semibold text-navy/85"></span>
+          </div>
+          <div class="leader-track h-2.5"><div id="genderFillF" class="leader-fill gender-fill-f"></div></div>
+        </div>
+        <div>
+          <div class="flex items-center justify-between text-xs text-navy/70 mb-1">
+            <span class="flex items-center gap-2">
+              <span class="icon-badge enactus-icon-badge" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="8" r="4"/>
+                  <path d="M6 21v-2a6 6 0 0 1 12 0v2"/>
+                  <path d="M3 -0.1 L3.735 1.265 L5.1 2 L3.735 2.735 L3 4.1 L2.265 2.735 L0.9 2 L2.265 1.265 Z" fill="currentColor" stroke="none"/>
+                  <circle cx="21" cy="20" r="0.8" fill="currentColor" stroke="none"/>
+                </svg>
+              </span>
+              <span id="genderMaleLabel"></span>
+            </span>
+            <span id="genderPercentM" class="font-semibold text-navy/85"></span>
+          </div>
+          <div class="leader-track h-2.5"><div id="genderFillM" class="leader-fill gender-fill-m"></div></div>
+        </div>
+      </div>
+      <p id="genderNote" class="text-xs text-navy/45 mt-3 italic"></p>
+
+      <div class="flex items-center gap-3 mt-6 mb-4">
+        <span class="rule w-8"></span>
+        <h2 id="deptChoiceTitle" class="text-navy/90 font-semibold tracking-wide text-sm"></h2>
+      </div>
+      <div id="deptChoiceList" class="space-y-3"></div>
+
+      <div class="flex items-center gap-3 mt-6 mb-4">
+        <span class="rule w-8"></span>
+        <h2 id="academicYearTitle" class="text-navy/90 font-semibold tracking-wide text-sm"></h2>
+      </div>
+      <div id="yearList" class="space-y-3"></div>
+    </section>
+
+    <!-- Recruitment Timeline / Process Steps -->
+    <section id="timelineSection" class="reveal glass rounded-2xl p-5 sm:p-8 mb-6" style="animation-delay:.1s">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="rule w-8"></span>
+        <h2 data-i18n="timelineTitle" class="text-navy/90 font-semibold tracking-wide text-sm"></h2>
+      </div>
+
+      <div class="relative">
+        <div class="step-connector step-connector-v sm:hidden" aria-hidden="true"></div>
+        <div class="step-connector step-connector-h hidden sm:block" aria-hidden="true"></div>
+
+        <div class="relative z-10 flex flex-col sm:flex-row gap-6 sm:gap-2">
+          <div class="flex sm:flex-col items-start sm:items-center gap-4 sm:gap-3 sm:flex-1 sm:text-center">
+            <div class="step-circle step-circle-done flex-shrink-0" aria-label="Completed">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            </div>
+            <p data-i18n="step1Label" class="text-sm font-medium text-navy/55"></p>
+          </div>
+
+          <div class="flex sm:flex-col items-start sm:items-center gap-4 sm:gap-3 sm:flex-1 sm:text-center">
+            <div class="step-circle step-circle-active flex-shrink-0">2</div>
+            <div>
+              <p data-i18n="step2Label" class="text-sm font-semibold text-navy/90"></p>
+              <p class="text-xs font-semibold text-goldlight mt-1 flex items-center gap-1.5 sm:justify-center">
+                <span class="step-pulse-dot" aria-hidden="true"></span>
+                <span data-i18n="stepActiveBadge"></span>
+              </p>
+            </div>
+          </div>
+
+          <div class="flex sm:flex-col items-start sm:items-center gap-4 sm:gap-3 sm:flex-1 sm:text-center">
+            <div class="step-circle flex-shrink-0">3</div>
+            <p data-i18n="step3Label" class="text-sm font-medium text-navy/55"></p>
+          </div>
+
+          <div class="flex sm:flex-col items-start sm:items-center gap-4 sm:gap-3 sm:flex-1 sm:text-center">
+            <div class="step-circle flex-shrink-0">4</div>
+            <p data-i18n="step4Label" class="text-sm font-medium text-navy/55"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Registration: open state -->
+    <section id="openFormSection" class="reveal glass rounded-2xl p-5 sm:p-8" style="animation-delay:.15s">
+      <div class="flex items-center gap-3 mb-5">
+        <span class="rule w-8"></span>
+        <h2 id="formSectionTitle" class="text-navy/90 font-semibold tracking-wide text-sm"></h2>
+      </div>
+
+      <form id="mainForm" novalidate action="https://formsubmit.co/hossin.rate@gmail.com" method="POST" class="space-y-4">
+        <input type="hidden" name="_subject" value="New Enactus FLSH Ain Chock application">
+        <input type="hidden" name="_cc" value="enactusflshac@gmail.com">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="Entry Type" value="Full Application">
+
+        <div>
+          <label id="lblFullName" for="fullName" class="block text-sm text-navy/70 mb-1.5"></label>
+          <input type="text" id="fullName" name="Full Name" class="field" autocomplete="name">
+          <p class="field-msg" id="fullName-msg"></p>
+        </div>
+
+        <div>
+          <label id="lblPhone" for="phone" class="block text-sm text-navy/70 mb-1.5"></label>
+          <input type="tel" id="phone" name="Phone / WhatsApp" class="field" placeholder="+212 6 00 00 00 00" autocomplete="tel">
+          <p class="field-msg" id="phone-msg"></p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label id="lblMajor" for="major" class="block text-sm text-navy/70 mb-1.5"></label>
+            <select id="major" name="Major / Department" class="field">
+              <option value="" selected disabled id="optMajorPlaceholder"></option>
+              <option value="Islamic Studies" data-i18n="major_islamic"></option>
+              <option value="Arabic Studies" data-i18n="major_arabic"></option>
+              <option value="French Studies" data-i18n="major_french"></option>
+              <option value="English Studies" data-i18n="major_english"></option>
+              <option value="Spanish Studies" data-i18n="major_spanish"></option>
+              <option value="German Studies" data-i18n="major_german"></option>
+              <option value="Italian Studies" data-i18n="major_italian"></option>
+              <option value="Chinese Studies" data-i18n="major_chinese"></option>
+              <option value="Amazigh Studies" data-i18n="major_amazigh"></option>
+              <option value="History and Heritage" data-i18n="major_history"></option>
+              <option value="Geography" data-i18n="major_geo"></option>
+              <option value="Sociology" data-i18n="major_sociology"></option>
+              <option value="Psychology" data-i18n="major_psych"></option>
+              <option value="Journalism and Media" data-i18n="major_journalism"></option>
+            </select>
+            <p class="field-msg" id="major-msg"></p>
+          </div>
+          <div>
+            <label id="lblYear" for="year" class="block text-sm text-navy/70 mb-1.5"></label>
+            <select id="year" name="Academic Year" class="field">
+              <option value="" selected disabled id="optYearPlaceholder"></option>
+              <option>S1</option>
+              <option>S2</option>
+              <option>S3</option>
+              <option>S4</option>
+              <option>S5</option>
+              <option>S6</option>
+            </select>
+            <p class="field-msg" id="year-msg"></p>
+          </div>
+        </div>
+
+        <div class="pt-2">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="rule w-8"></span>
+            <h2 id="prefsSectionTitle" class="text-navy/90 font-semibold tracking-wide text-sm"></h2>
+          </div>
+
+          <div class="mb-5">
+            <label id="lblDept" class="block text-sm text-navy/70 mb-2"></label>
+            <div id="deptOptions" class="space-y-3">
+              <label class="dept-chip field">
+                <input type="checkbox" class="dept-checkbox" name="Department Choice" value="Project Management & Social Innovation">
+                <span data-i18n="dept_pm"></span>
+              </label>
+              <label class="dept-chip field">
+                <input type="checkbox" class="dept-checkbox" name="Department Choice" value="Marketing & Content Creation">
+                <span data-i18n="dept_marketing"></span>
+              </label>
+              <label class="dept-chip field">
+                <input type="checkbox" class="dept-checkbox" name="Department Choice" value="Event Management">
+                <span data-i18n="dept_event"></span>
+              </label>
+              <label class="dept-chip field">
+                <input type="checkbox" class="dept-checkbox" name="Department Choice" value="External Relations & Sponsorship">
+                <span data-i18n="dept_external"></span>
+              </label>
+            </div>
+            <p class="field-msg" id="deptChoice-msg"></p>
+          </div>
+
+          <div class="mb-5">
+            <label id="lblWhyJoin" for="whyJoin" class="block text-sm text-navy/70 mb-1.5"></label>
+            <textarea id="whyJoin" name="Why Join" rows="4" class="field"></textarea>
+            <p class="field-msg" id="whyJoin-msg"></p>
+          </div>
+
+          <div>
+            <label id="lblPrevExp" for="prevExp" class="block text-sm text-navy/70 mb-1.5"></label>
+            <textarea id="prevExp" name="Previous Experience" rows="4" class="field"></textarea>
+          </div>
+        </div>
+
+        <button type="submit" id="submitBtn" class="btn-submit w-full rounded-xl py-3.5 font-semibold text-sm tracking-wide"></button>
+        <p id="mainSubmitMsg" class="text-center text-xs text-[#DC2626]"></p>
+        <p id="requiredNote" class="text-center text-xs text-navy/35"></p>
+      </form>
+    </section>
+
+    <!-- Registration: closed / waitlist state -->
+    <section id="closedSection" class="reveal glass rounded-2xl p-5 sm:p-8 hidden" style="animation-delay:.15s">
+      <p id="closedTitle" class="text-center text-goldlight font-semibold mb-2"></p>
+      <p id="closedSubtext" class="text-center text-sm text-navy/60 mb-6"></p>
+
+      <div class="whatsapp-card rounded-xl p-4 mb-6">
+        <p id="whatsappCardTitle" class="font-semibold text-sm text-navy/90 mb-1"></p>
+        <p id="whatsappCardDesc" class="text-xs text-navy/60 leading-relaxed"></p>
+      </div>
+
+      <form id="waitlistForm" novalidate action="https://formsubmit.co/hossin.rate@gmail.com" method="POST" class="space-y-4">
+        <input type="hidden" name="_subject" value="Enactus FLSH Ain Chock — Waiting list entry">
+        <input type="hidden" name="_cc" value="enactusflshac@gmail.com">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="Entry Type" value="Waiting List">
+
+        <div>
+          <label id="wlLblFullName" for="wlFullName" class="block text-sm text-navy/70 mb-1.5"></label>
+          <input type="text" id="wlFullName" name="Full Name" class="field" autocomplete="name">
+          <p class="field-msg" id="wlFullName-msg"></p>
+        </div>
+        <div>
+          <label id="wlLblPhone" for="wlPhone" class="block text-sm text-navy/70 mb-1.5"></label>
+          <input type="tel" id="wlPhone" name="Phone / WhatsApp" class="field" placeholder="+212 6 00 00 00 00" autocomplete="tel">
+          <p class="field-msg" id="wlPhone-msg"></p>
+        </div>
+
+        <button type="submit" id="waitlistBtn" class="btn-submit w-full rounded-xl py-3.5 font-semibold text-sm tracking-wide"></button>
+        <p id="wlSubmitMsg" class="text-center text-xs text-[#DC2626]"></p>
+      </form>
+    </section>
+
+    <!-- FAQ Accordion -->
+    <section id="faqSection" class="reveal glass rounded-2xl p-5 sm:p-8 mb-6" style="animation-delay:.2s">
+      <div class="flex items-center gap-3 mb-5">
+        <span class="rule w-8"></span>
+        <h2 id="faqTitle" class="text-navy/90 font-semibold tracking-wide text-sm"></h2>
+      </div>
+      <div id="faqList" class="space-y-3"></div>
+    </section>
+
+    <div class="flex items-center justify-center gap-3 mt-5">
+      <a href="https://www.instagram.com/enactusflshac?igsh=bmFvc2ZoZWR3Mzdx&utm_source=qr" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="social-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+        </svg>
+      </a>
+      <a href="https://www.linkedin.com/company/enactus-flsh-ain-chock/posts/?feedView=all" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" class="social-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+          <rect x="2" y="9" width="4" height="12"/>
+          <circle cx="4" cy="4" r="2"/>
+        </svg>
+      </a>
+      <a href="https://www.tiktok.com/@enactus.flshac" target="_blank" rel="noopener noreferrer" aria-label="TikTok" class="social-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 12a4 4 0 1 0 4 4V2a5 5 0 0 0 5 5"/>
+        </svg>
+      </a>
+    </div>
+
+    <p id="footerLine" class="text-center text-xs text-navy/30 mt-4"></p>
+  </main>
+
+  <!-- Success modal -->
+  <div id="successModal" class="hidden fixed inset-0 z-50 items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" id="modalBackdrop"></div>
+    <div class="modal-panel glass relative rounded-2xl p-8 max-w-sm w-full text-center" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="mx-auto mb-5 w-14 h-14 rounded-full bg-gold/15 flex items-center justify-center">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0F172A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      </div>
+      <h3 id="modalTitle" class="font-display text-xl font-semibold gold-text mb-2"></h3>
+      <p id="modalText" class="text-navy/65 text-sm leading-relaxed"></p>
+      <button id="modalClose" class="btn-submit mt-6 w-full rounded-xl py-3 font-semibold text-sm"></button>
+    </div>
+  </div>
+
+  <!-- Live Activity Toast Notification -->
+  <div id="liveToast" class="fixed bottom-5 right-5 z-50 hidden opacity-0 transition-opacity duration-500 w-[calc(100%-2.5rem)] sm:w-80" role="status" aria-live="polite">
+    <div class="backdrop-blur-md bg-white/95 border border-slate-200 shadow-xl rounded-xl p-3 flex items-start gap-2.5">
+      <span class="toast-live-dot mt-1" aria-hidden="true"></span>
+      <p id="liveToastText" class="text-xs text-navy/80 leading-snug flex-1"></p>
+      <button type="button" id="liveToastClose" aria-label="Close" class="text-navy/40 hover:text-navy/70 leading-none text-base flex-shrink-0">&times;</button>
+    </div>
+  </div>
+
+<script>
+(function () {
+  // ====== CONFIG — the ONLY thing you should edit after real applications come in ======
+  // After you receive a new application by email, just lower spotsLeft by 1 (or set isFull
+  // to true once you're done). The progress bar % and the waitlist switch both update
+  // automatically from this one number — nothing else in the file needs to change.
+  var CONFIG = {
+    deadlineISO: "2026-09-28T23:59:59+01:00", // Casablanca time (UTC+1) — unused now registration is permanently closed, kept for reference
+    isFull: true,                             // registration permanently closed — waitlist mode
+    totalSpots: 50,                           // total capacity for this season
+    spotsLeft: 0,                             // no seats left — waitlist mode
+    leaderboard: [
+      { key: "major_english", percent: 85, rank: 1 },
+      { key: "major_psych",   percent: 6,  rank: 2 },
+      { key: "major_french",  percent: 6,  rank: 3 },
+      { key: "major_geo",     percent: 3,  rank: 4 }
+    ],
+    gender: { female: 74, male: 26 },
+    deptChoice: [
+      { key: "dept_event",     percent: 40, rank: 1 },
+      { key: "dept_marketing", percent: 34, rank: 2 },
+      { key: "dept_external",  percent: 20, rank: 3 },
+      { key: "dept_pm",        percent: 6,  rank: 4 }
+    ],
+    academicYear: [
+      { key: "year_s3", percent: 46, rank: 1 },
+      { key: "year_s5", percent: 31, rank: 2 },
+      { key: "year_s1", percent: 17, rank: 3 }
+    ]
+  };
+  // ====== LIVE, NO-DATABASE SEAT COUNTER ======
+  // spotsLeft now lives in localStorage so it survives page refreshes on this device/browser.
+  // Every time the main registration form is submitted successfully, the count is decremented
+  // by 1, the progress bar / texts update instantly (no reload), and — once it hits 0, or the
+  // countdown deadline passes — the form automatically swaps to the Waiting List.
+  // NOTE: because localStorage is local to each visitor's browser, this is a per-device demo
+  // counter, not a real shared count synced across every visitor. Wire it to a real backend
+  // (Google Sheets, Firebase, a small API, etc.) if you need one true number for everyone.
+  var SPOTS_STORAGE_KEY = "enactusFlshAinChock_waitlist_mode_v2"; // bumped so every visitor's browser immediately re-reads waitlist mode, instead of keeping an old cached seat count
+
+  function loadSpotsLeft() {
+    try {
+      var stored = localStorage.getItem(SPOTS_STORAGE_KEY);
+      if (stored !== null && stored !== "" && !isNaN(parseInt(stored, 10))) {
+        return Math.max(0, Math.min(CONFIG.totalSpots, parseInt(stored, 10)));
+      }
+    } catch (e) { /* localStorage unavailable — fall back to CONFIG default below */ }
+    return CONFIG.spotsLeft; // first-ever visit on this device: use the initial value (14)
+  }
+
+  function saveSpotsLeft(value) {
+    try { localStorage.setItem(SPOTS_STORAGE_KEY, String(value)); } catch (e) { /* ignore */ }
+  }
+
+  // Initialize spotsLeft from localStorage (or seed it on first visit)
+  CONFIG.spotsLeft = loadSpotsLeft();
+  saveSpotsLeft(CONFIG.spotsLeft);
+  if (CONFIG.spotsLeft <= 0) {
+    CONFIG.spotsLeft = 0;
+    CONFIG.isFull = true; // no seats left on this device's last known count → force waitlist
+  }
+
+  // Whether the animated "count up" reveal has already played once (page load / first scroll into view).
+  // Before it plays, every percentage/seat number below shows 0 on purpose — see revealStats() further down.
+  var statsRevealed = false;
+
+  function getProgressPercent() {
+    var pct = ((CONFIG.totalSpots - CONFIG.spotsLeft) / CONFIG.totalSpots) * 100;
+    return Math.max(0, Math.min(100, Math.round(pct)));
+  }
+
+  // Refresh every on-screen number that depends on spotsLeft, instantly, no reload.
+  function updateSpotsUI() {
+    var n = statsRevealed ? CONFIG.spotsLeft : 0;
+    var p = statsRevealed ? getProgressPercent() : 0;
+    document.getElementById("progressLabel").textContent = fmt("progressLabel", { p: p });
+    document.getElementById("progressSubtext").textContent = fmt("progressSubtext", { n: n });
+    document.getElementById("progressFill").style.width = p + "%";
+  }
+
+  // Small "pop" pulse on the numbers that just changed, reusing the .tick keyframe already
+  // defined in the stylesheet for the countdown digits.
+  function pulseTick(id) {
+    var el = document.getElementById(id);
+    el.classList.remove("tick");
+    void el.offsetWidth;
+    el.classList.add("tick");
+  }
+
+  // Called right after a successful main-form submission: -1 seat, save, refresh UI,
+  // and auto-switch to the waiting list the moment seats hit 0.
+  function decrementSpotsAndRefresh() {
+    if (CONFIG.spotsLeft > 0) {
+      CONFIG.spotsLeft -= 1;
+      saveSpotsLeft(CONFIG.spotsLeft);
+    }
+    if (CONFIG.spotsLeft <= 0) {
+      CONFIG.spotsLeft = 0;
+      CONFIG.isFull = true;
+    }
+    updateSpotsUI();
+    pulseTick("progressLabel");
+    pulseTick("progressSubtext");
+    renderRegistrationState(); // auto-hides the open form / shows the waitlist form if now full
+  }
+  // Wraps any inline SVG path-set in the yellow Enactus badge circle.
+  function makeBadge(innerPaths) {
+    return '<span class="icon-badge enactus-icon-badge" aria-hidden="true">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
+        innerPaths +
+      '</svg>' +
+    '</span>';
+  }
+
+  // Small decorative sparkle/dot accents (Enactus-style illustration flair) that sit in the
+  // empty corners around each main icon, deliberately drifting past the 0-24 viewBox edge so
+  // they spill outside the round badge, the way the reference illustrations do.
+  function starAt(cx, cy, s) {
+    s = s || 2.2;
+    var k = +(s * 0.35).toFixed(2);
+    return '<path d="M' + cx + ' ' + (cy - s) + ' L' + (cx + k) + ' ' + (cy - k) +
+      ' L' + (cx + s) + ' ' + cy + ' L' + (cx + k) + ' ' + (cy + k) +
+      ' L' + cx + ' ' + (cy + s) + ' L' + (cx - k) + ' ' + (cy + k) +
+      ' L' + (cx - s) + ' ' + cy + ' L' + (cx - k) + ' ' + (cy - k) +
+      ' Z" fill="currentColor" stroke="none"/>';
+  }
+  function dotAt(cx, cy, r) {
+    r = r || 0.9;
+    return '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="currentColor" stroke="none"/>';
+  }
+
+  // One distinct, meaningful line-art icon per department (Lucide-style paths),
+  // keyed by the translation key used in CONFIG.leaderboard. A generic trophy
+  // is kept as a fallback for any department not explicitly mapped below.
+  var DEPT_ICONS = {
+    // English Studies → open book (BookOpen) + sparkle flourish
+    major_english: makeBadge(
+      '<path d="M12 7v14"/>' +
+      '<path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>' +
+      starAt(24, -1, 2.1) + dotAt(-1, 23, 0.8)
+    ),
+    // Psychology → brain (Brain) + sparkle flourish
+    major_psych: makeBadge(
+      '<path d="M9.5 2A3.5 3.5 0 0 0 6 5.5c0 .4.06.78.17 1.14A3.5 3.5 0 0 0 4 10a3.5 3.5 0 0 0 1.4 6.68A3.5 3.5 0 0 0 9 21a3.5 3.5 0 0 0 3.5-3.5V5.5A3.5 3.5 0 0 0 9.5 2z"/>' +
+      '<path d="M14.5 2A3.5 3.5 0 0 1 18 5.5c0 .4-.06.78-.17 1.14A3.5 3.5 0 0 1 20 10a3.5 3.5 0 0 1-1.4 6.68A3.5 3.5 0 0 1 15 21a3.5 3.5 0 0 1-3.5-3.5V5.5A3.5 3.5 0 0 1 14.5 2z"/>' +
+      starAt(23, 1, 2) + dotAt(0, 23, 0.8)
+    ),
+    // French Studies → quill / feather (Feather) + sparkle flourish
+    major_french: makeBadge(
+      '<path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/>' +
+      '<path d="M16 8 2 22"/>' +
+      '<path d="M17.5 15H9"/>' +
+      starAt(2, 1, 1.9) + dotAt(22, 21, 0.8)
+    ),
+    // Geography → globe (Globe) + sparkle flourish
+    major_geo: makeBadge(
+      '<circle cx="12" cy="12" r="10"/>' +
+      '<path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>' +
+      '<path d="M2 12h20"/>' +
+      starAt(23, 1, 2) + dotAt(0, 23, 0.8)
+    ),
+    // Event Management → calendar (Calendar) + sparkle flourish
+    dept_event: makeBadge(
+      '<rect x="3" y="4" width="18" height="18" rx="2"/>' +
+      '<path d="M16 2v4"/>' +
+      '<path d="M8 2v4"/>' +
+      '<path d="M3 10h18"/>' +
+      starAt(24, 0, 1.9) + dotAt(-1, 24, 0.8)
+    ),
+    // Marketing & Content Creation → megaphone (Megaphone) + sparkle flourish
+    dept_marketing: makeBadge(
+      '<path d="m3 11 18-5v12L3 14v-3z"/>' +
+      '<path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>' +
+      starAt(22, 2, 2) + dotAt(1, 22, 0.8)
+    ),
+    // External Relations & Sponsorship → paper plane / outreach (Send) + sparkle flourish
+    dept_external: makeBadge(
+      '<path d="m22 2-7 20-4-9-9-4Z"/>' +
+      '<path d="M22 2 11 13"/>' +
+      starAt(21, 21, 2) + dotAt(2, 2, 0.8)
+    ),
+    // Project Management & Social Innovation → target (Target) + sparkle flourish
+    dept_pm: makeBadge(
+      '<circle cx="12" cy="12" r="10"/>' +
+      '<circle cx="12" cy="12" r="6"/>' +
+      '<circle cx="12" cy="12" r="2"/>' +
+      starAt(23, 1, 2) + dotAt(1, 23, 0.8)
+    ),
+    // Academic year rows → graduation cap (GraduationCap) + sparkle flourish, shared across S1/S3/S5
+    year_s1: makeBadge(
+      '<path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/>' +
+      '<path d="M22 10v6"/>' +
+      '<path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>' +
+      starAt(22, 1, 1.9) + dotAt(1, 17, 0.8)
+    )
+  };
+  DEPT_ICONS.year_s3 = DEPT_ICONS.year_s1;
+  DEPT_ICONS.year_s5 = DEPT_ICONS.year_s1;
+  var TROPHY_ICON = makeBadge(
+    '<path d="M7 4h10v3a5 5 0 0 1-10 0z"/>' +
+    '<path d="M7 5H4.5A2.5 2.5 0 0 0 4 9.9L7 11"/>' +
+    '<path d="M17 5h2.5A2.5 2.5 0 0 1 20 9.9L17 11"/>' +
+    '<path d="M12 12v4"/>' +
+    '<path d="M9 20h6"/>' +
+    '<path d="M10 20v-2.5h4V20"/>'
+  );
+
+  var translations = {
+    en: {
+      pageTitle: "Enactus FLSH Ain Chock — Recruitment Form",
+      subtitle: "Recruitment Form",
+      slogan: "Join us to create social impact through entrepreneurial action.",
+      announcementTitle: "🔒 Official Registration Closed — Waiting List Open!",
+      announcementSubtext: "Official registration has closed! Join the waiting list below to get priority if a spot opens up.",
+      urgencyText: "🚨 Only {n} spots left to reach our quota for this season!",
+      days: "Days", hours: "Hours", minutes: "Minutes", seconds: "Seconds",
+      countdownExpired: "⛔ The registration deadline has passed.",
+      progressLabel: "{p}% of available spots booked 🔥",
+      progressSubtext: "Only {n} spots left before registration officially closes",
+      leaderboardTitle: "Most Registered Departments",
+      leadTag: "In the lead",
+      genderTitle: "Gender Distribution",
+      genderFemale: "Female",
+      genderMale: "Male",
+      genderNote: "We need more male representation in our team! 😄",
+      deptChoiceTitle: "Most Requested Committees",
+      academicYearTitle: "Academic Year Distribution",
+      year_s1: "S1", year_s3: "S3", year_s5: "S5",
+      introVideoTitle: "Discover the Enactus Experience",
+      timelineTitle: "Recruitment Process",
+      step1Label: "1. Fill Online Form",
+      stepActiveBadge: "📍 You are here",
+      step2Label: "2. Application Review & Community Addition",
+      step3Label: "3. Oral Interviews",
+      step4Label: "4. Selection & Onboarding",
+      formSectionTitle: "Registration Form",
+      labelFullName: "Full Name",
+      placeholderFullName: "e.g. Yasmine El Amrani",
+      labelPhone: "Phone / WhatsApp",
+      labelMajor: "Major / Department",
+      selectMajorPlaceholder: "Select your department",
+      labelYear: "Academic Year",
+      selectYearPlaceholder: "Select your year",
+      prefsSectionTitle: "Club preferences & experience",
+      labelDept: "Department choice — pick up to 2",
+      dept_pm: "Project Management & Social Innovation",
+      dept_marketing: "Marketing & Content Creation",
+      dept_event: "Event Management",
+      dept_external: "External Relations & Sponsorship",
+      labelWhyJoin: "Why do you want to join Enactus FLSH Ain Chock?",
+      placeholderWhyJoin: "Tell us what draws you to Enactus and the impact you'd like to make...",
+      labelPrevExp: "Previous club experience or specific skills",
+      placeholderPrevExp: "Design, video editing, public speaking, finance, past clubs... (optional)",
+      errDept: "Please select at least one department (up to 2).",
+      errWhyJoin: "Please tell us why you want to join (a few words at least).",
+      submitBtn: "Submit Application",
+      requiredNote: "Fields marked * are required.",
+      closedTitle: "🔒 Official registration is now closed as spots are filled.",
+      closedSubtext: "You can register for the Waiting List and we will contact you if a spot opens up.",
+      whatsappCardTitle: "📢 Adding Applicants to the Official WhatsApp Community Starting Tomorrow!",
+      whatsappCardDesc: "Starting tomorrow, our team will start adding all registered applicants to our official WhatsApp Community to share interview schedules and team updates.",
+      waitlistBtn: "Join Waiting List",
+      successTitle: "Application received",
+      successText: "Thank you for applying! We will contact you soon for the interview.",
+      successWaitlistText: "You've been added to the waiting list! We will contact you as soon as a spot opens up.",
+      alreadyAppliedText: "✅ You've already applied from this device. We'll be in touch soon!",
+      alreadyWaitlistedText: "✅ You're already on the waiting list from this device. We'll reach out if a spot opens up!",
+      modalCloseBtn: "Done",
+      errFullName: "Please enter your full name.",
+      errPhone: "Please enter a valid phone number.",
+      errMajor: "Please select your department.",
+      errYear: "Please select your academic year.",
+      toast1: "Imane (English Studies) joined the waiting list 2 mins ago",
+      toast2: "Youssef submitted a waiting list application",
+      toast3: "Salma from Psychology department just joined",
+      toast4: "Mehdi reserved a spot on the waiting list",
+      footerLine: "Enactus FLSH Ain Chock — Hassan II University of Casablanca",
+      faqTitle: "Frequently Asked Questions",
+      faq1_q: "What is Enactus simply?",
+      faq1_a: "Enactus is an international non-profit student organization active in over 30 countries and across Moroccan universities. It brings college students together to develop innovative social entrepreneurship projects that solve real community and environmental challenges.",
+      faq2_q: "What will I gain as a member of Enactus FLSH Ain Chock?",
+      faq2_a: "You develop high-demand soft skills (public speaking, leadership, teamwork), gain real hands-on project experience for your CV, build a strong professional network, participate in national competitions, and receive official certificates.",
+      faq3_q: "Can I propose my own social project idea?",
+      faq3_a: "Absolutely! Enactus encourages innovation. During our Ideation phases at the start of the year, members can pitch project ideas, and the team works together to turn them into sustainable real-world startups.",
+      faq4_q: "How does the selection process work after applying?",
+      faq4_a: "The process has 2 main steps: 1) Form Review to understand your motivation and interests. 2) A short, friendly Interview to meet you, discuss your preferred department, and check your availability.",
+      faq5_q: "How many hours per week does it require? Does it affect my studies?",
+      faq5_a: "On average, few hours per week (meetings, workshops, team tasks). Your academic studies are always the top priority; activities are reduced or paused during university exam periods.",
+      faq6_q: "Do I need prior experience or an economics background to join?",
+      faq6_a: "Not at all! Students from all academic departments are welcome (Literature, Languages, Social Sciences, etc.). Enactus provides complete training and mentorship in leadership, marketing, design, and project management.",
+      submitMsgError: "Something went wrong sending your application. Please try again, or email us directly at hossin.rate@gmail.com.",
+      major_islamic: "Islamic Studies", major_arabic: "Arabic Studies", major_french: "French Studies",
+      major_english: "English Studies", major_spanish: "Spanish Studies", major_german: "German Studies",
+      major_italian: "Italian Studies", major_chinese: "Chinese Studies", major_amazigh: "Amazigh Studies",
+      major_history: "History and Heritage", major_geo: "Geography", major_sociology: "Sociology",
+      major_psych: "Psychology", major_journalism: "Journalism and Media"
+    },
+    ar: {
+      pageTitle: "Enactus FLSH Ain Chock — استمارة التسجيل",
+      subtitle: "استمارة التسجيل",
+      slogan: "انضم إلينا لخلق أثر اجتماعي من خلال العمل الريادي.",
+      announcementTitle: "🔒 تم إغلاق التسجيل الرسمي — قائمة الانتظار مفتوحة الآن!",
+      announcementSubtext: "تم إغلاق التسجيل الرسمي! انضم إلى قائمة الانتظار أدناه للحصول على الأولوية في حال توفر مقعد.",
+      urgencyText: "🚨 تبقى {n} مقعدا فقط للوصول إلى حصتنا لهذا الموسم!",
+      days: "أيام", hours: "ساعات", minutes: "دقائق", seconds: "ثواني",
+      countdownExpired: "⛔ لقد انتهى الموعد النهائي للتسجيل.",
+      progressLabel: "تم حجز {p}% من المقاعد المتاحة 🔥",
+      progressSubtext: "تبقى {n} مقعدا فقط قبل إغلاق التسجيل رسميا",
+      leaderboardTitle: "الشعب الأكثر تسجيلا",
+      leadTag: "في الصدارة",
+      genderTitle: "توزيع الجنسين",
+      genderFemale: "إناث",
+      genderMale: "ذكور",
+      genderNote: "نحتاج إلى مزيد من التمثيل الذكوري في فريقنا! 😄",
+      deptChoiceTitle: "اللجان الأكثر طلبا",
+      academicYearTitle: "توزيع السنوات الدراسية",
+      year_s1: "S1", year_s3: "S3", year_s5: "S5",
+      introVideoTitle: "اكتشف تجربة Enactus المغرب",
+      timelineTitle: "مراحل التوظيف",
+      step1Label: "1. ملء الاستمارة الإلكترونية",
+      stepActiveBadge: "📍 نحن هنا الآن",
+      step2Label: "2. دراسة الطلبات والإضافة لمجتمع الواتساب",
+      step3Label: "3. المقابلات الشفهية",
+      step4Label: "4. الترحيب بالأعضاء المقبولين",
+      formSectionTitle: "استمارة التسجيل",
+      labelFullName: "الاسم الكامل",
+      placeholderFullName: "مثال: ياسمين العمراني",
+      labelPhone: "الهاتف / واتساب",
+      labelMajor: "التخصص / الشعبة",
+      selectMajorPlaceholder: "اختر شعبتك",
+      labelYear: "السنة الدراسية",
+      selectYearPlaceholder: "اختر سنتك الدراسية",
+      prefsSectionTitle: "تفضيلات وخبرة النادي",
+      labelDept: "اختيار الشعبة — اختر حتى شعبتين",
+      dept_pm: "إدارة المشاريع والابتكار الاجتماعي",
+      dept_marketing: "التسويق وصناعة المحتوى",
+      dept_event: "تنظيم الفعاليات",
+      dept_external: "العلاقات الخارجية والرعاية",
+      labelWhyJoin: "لماذا تريد الانضمام إلى Enactus FLSH Ain Chock؟",
+      placeholderWhyJoin: "أخبرنا بما يجذبك إلى Enactus والأثر الذي ترغب في تحقيقه...",
+      labelPrevExp: "خبرة سابقة في الأندية أو مهارات محددة",
+      placeholderPrevExp: "التصميم، مونتاج الفيديو، الخطابة، المالية، أندية سابقة... (اختياري)",
+      errDept: "يرجى اختيار شعبة واحدة على الأقل (بحد أقصى شعبتين).",
+      errWhyJoin: "يرجى إخبارنا لماذا تريد الانضمام (بضع كلمات على الأقل).",
+      submitBtn: "إرسال الطلب",
+      requiredNote: "الحقول المعلمة بـ * إلزامية.",
+      closedTitle: "🔒 التسجيل الرسمي مغلق الآن لامتلاء المقاعد.",
+      closedSubtext: "يمكنك التسجيل في قائمة الانتظار وسنتواصل معك في حال توفر مقعد.",
+      whatsappCardTitle: "📢 إضافة المترشحين لمجتمع الواتساب الرسمي ابتداءً من الغد!",
+      whatsappCardDesc: "ابتداءً من الغد، سيبدأ فريقنا بإضافة جميع المترشحين الذين قدموا استمارتهم لمجتمع الواتساب الرسمي الخاص بالنادي لمتابعة مواعيد المقابلات الشفهية والمستجدات.",
+      waitlistBtn: "الانضمام إلى قائمة الانتظار",
+      successTitle: "تم استلام الطلب",
+      successText: "شكرا لتقديمك! سنتواصل معك قريبا لإجراء المقابلة.",
+      successWaitlistText: "تمت إضافتك إلى قائمة الانتظار! سنتواصل معك بمجرد توفر مقعد.",
+      alreadyAppliedText: "✅ لقد قدمت طلبك بالفعل من هذا الجهاز. سنتواصل معك قريبا!",
+      alreadyWaitlistedText: "✅ أنت مسجل بالفعل في قائمة الانتظار من هذا الجهاز. سنتواصل معك إذا توفر مقعد!",
+      modalCloseBtn: "تم",
+      errFullName: "يرجى إدخال اسمك الكامل.",
+      errPhone: "يرجى إدخال رقم هاتف صحيح.",
+      errMajor: "يرجى اختيار شعبتك.",
+      errYear: "يرجى اختيار سنتك الدراسية.",
+      toast1: "انضمت إيمان (دراسات إنجليزية) إلى قائمة الانتظار منذ دقيقتين",
+      toast2: "قدّم يوسف طلباً للانضمام إلى قائمة الانتظار",
+      toast3: "انضمت سلمى من شعبة علم النفس للتو إلى قائمة الانتظار",
+      toast4: "حجز مهدي مقعداً في قائمة الانتظار",
+      footerLine: "Enactus FLSH Ain Chock — جامعة الحسن الثاني بالدار البيضاء",
+      faqTitle: "الأسئلة الشائعة",
+      faq1_q: "ما هي Enactus ببساطة؟",
+      faq1_a: "هي منظمة طلابية عالمية غير ربحية متواجدة في أكثر من 30 دولة ومختلف الجامعات المغربية. هدفها جمع الطلاب الجامعيين لتطوير مشاريع ومبادرات تعمل على حل مشاكل اجتماعية أو بيئية واقتصادية بأسلوب ريادي ومبتكر.",
+      faq2_q: "ما الذي سأستفيده كعضو في نادي Enactus FLSH Ain Chock؟",
+      faq2_a: "تطوير المهارات الناعمة (الخطابة، القيادة، والعمل الجماعي)، اكتساب خبرة ميدانية حقيقية لتعزيز السيرة الذاتية، بناء شبكة علاقات واسعة، المشاركة في المسابقات الوطنية والدولية، والحصول على شواهد معتمدة.",
+      faq3_q: "هل يمكنني اقتراح فكرة مشروع اجتماعي خاصة بي؟",
+      faq3_a: "نعم بالتأكيد! تشجع Enactus الابتكار. نخصص في بداية السنة جلسات للعصف الذهني (Ideation) حيث يمكن للأعضاء تقديم أفكار مشاريع، ونعمل معاً على تحويلها إلى مشاريع مستدامة على أرض الواقع.",
+      faq4_q: "كيف تتم عملية الانتقاء بعد ملء استمارة التسجيل؟",
+      faq4_a: "تمر العملية بمرحلتين: 1) مراجعة الاستمارة للتعرف على اهتماماتك ودوافعك. 2) مقابلة شفهية (Interview) بسيطة وودية للتعرف عليك عن قرب ومناقشة اختيارك للشعبة ومسؤولياتك.",
+      faq5_q: "كم ساعة أسبوعياً تتطلبها أنشطة النادي؟ وهل تؤثر على دراستي؟",
+      faq5_a: "في المتوسط بضع ساعات أسبوعيا تتوزع بين الاجتماعات الدورية والأنشطة. دراستك الجامعية تظل في مقدمة الأولويات؛ حيث يتم تخفيف أنشطة النادي كلياً خلال فترات الامتحانات.",
+      faq6_q: "هل يلزمني خبرة سابقة أو تخصص في الاقتصاد للانضمام؟",
+      faq6_a: "لا، إطلاقاً! نرحب بجميع الطلاب من كل التخصصات. يوفر النادي دورات تكوينية وتأطيراً مستمراً في مجالات القيادة، التسويق، التصميم، وإدارة المشاريع.",
+      submitMsgError: "حدث خطأ أثناء إرسال طلبك. يرجى المحاولة مرة أخرى، أو مراسلتنا مباشرة عبر hossin.rate@gmail.com.",
+      major_islamic: "الدراسات الإسلامية", major_arabic: "الدراسات العربية", major_french: "الدراسات الفرنسية",
+      major_english: "الدراسات الإنجليزية", major_spanish: "الدراسات الإسبانية", major_german: "الدراسات الألمانية",
+      major_italian: "الدراسات الإيطالية", major_chinese: "الدراسات الصينية", major_amazigh: "الدراسات الأمازيغية",
+      major_history: "التاريخ والتراث", major_geo: "الجغرافيا", major_sociology: "علم الاجتماع",
+      major_psych: "علم النفس", major_journalism: "الصحافة والإعلام"
+    },
+    fr: {
+      pageTitle: "Enactus FLSH Ain Chock — Formulaire de recrutement",
+      subtitle: "Formulaire de recrutement",
+      slogan: "Rejoignez-nous pour créer un impact social grâce à l'action entrepreneuriale.",
+      announcementTitle: "🔒 Inscriptions officielles closes — Liste d'attente ouverte !",
+      announcementSubtext: "Les inscriptions officielles sont closes ! Rejoignez la liste d'attente ci-dessous pour être prioritaire en cas de place disponible.",
+      urgencyText: "🚨 Il ne reste que {n} places pour atteindre notre quota de cette saison !",
+      days: "Jours", hours: "Heures", minutes: "Minutes", seconds: "Secondes",
+      countdownExpired: "⛔ La date limite d'inscription est dépassée.",
+      progressLabel: "{p}% des places disponibles sont réservées 🔥",
+      progressSubtext: "Il ne reste que {n} places avant la clôture officielle des inscriptions",
+      leaderboardTitle: "Filières les plus inscrites",
+      leadTag: "En tête",
+      genderTitle: "Répartition par genre",
+      genderFemale: "Femmes",
+      genderMale: "Hommes",
+      genderNote: "Nous avons besoin de plus de représentation masculine dans notre équipe ! 😄",
+      introVideoTitle: "Découvrez l'expérience Enactus",
+      timelineTitle: "Processus de recrutement",
+      step1Label: "1. Remplir le formulaire en ligne",
+      stepActiveBadge: "📍 Vous êtes ici",
+      step2Label: "2. Étude des candidatures et ajout à la communauté WhatsApp",
+      step3Label: "3. Entretiens oraux",
+      step4Label: "4. Sélection et accueil des membres",
+      formSectionTitle: "Formulaire d'inscription",
+      labelFullName: "Nom complet",
+      placeholderFullName: "ex. Yasmine El Amrani",
+      labelPhone: "Téléphone / WhatsApp",
+      labelMajor: "Filière / Département",
+      selectMajorPlaceholder: "Sélectionnez votre filière",
+      labelYear: "Année académique",
+      selectYearPlaceholder: "Sélectionnez votre année",
+      prefsSectionTitle: "Préférences et expérience au sein du club",
+      labelDept: "Choix de département — jusqu'à 2",
+      dept_pm: "Gestion de projet et innovation sociale",
+      dept_marketing: "Marketing et création de contenu",
+      dept_event: "Gestion d'événements",
+      dept_external: "Relations extérieures et partenariats",
+      labelWhyJoin: "Pourquoi voulez-vous rejoindre Enactus FLSH Ain Chock ?",
+      placeholderWhyJoin: "Dites-nous ce qui vous attire chez Enactus et l'impact que vous aimeriez avoir...",
+      labelPrevExp: "Expérience associative antérieure ou compétences spécifiques",
+      placeholderPrevExp: "Design, montage vidéo, prise de parole en public, finance, anciens clubs... (facultatif)",
+      errDept: "Veuillez sélectionner au moins un département (jusqu'à 2).",
+      errWhyJoin: "Merci de nous dire pourquoi vous souhaitez nous rejoindre (quelques mots au moins).",
+      submitBtn: "Envoyer la candidature",
+      requiredNote: "Les champs marqués d'un * sont obligatoires.",
+      closedTitle: "🔒 Les inscriptions officielles sont désormais closes, les places étant complètes.",
+      closedSubtext: "Vous pouvez vous inscrire sur la liste d'attente et nous vous contacterons si une place se libère.",
+      whatsappCardTitle: "📢 Ajout des candidats à la communauté WhatsApp officielle dès demain !",
+      whatsappCardDesc: "À partir de demain, notre équipe commencera à ajouter tous les candidats inscrits à notre communauté WhatsApp officielle afin de partager les horaires d'entretien et les actualités de l'équipe.",
+      waitlistBtn: "Rejoindre la liste d'attente",
+      successTitle: "Candidature reçue",
+      successText: "Merci pour votre candidature ! Nous vous contacterons bientôt pour l'entretien.",
+      successWaitlistText: "Vous avez été ajouté(e) à la liste d'attente ! Nous vous contacterons dès qu'une place se libère.",
+      alreadyAppliedText: "✅ Vous avez déjà postulé depuis cet appareil. Nous vous contacterons bientôt !",
+      alreadyWaitlistedText: "✅ Vous êtes déjà sur la liste d'attente depuis cet appareil. Nous vous contacterons si une place se libère !",
+      modalCloseBtn: "Terminé",
+      errFullName: "Veuillez entrer votre nom complet.",
+      errPhone: "Veuillez entrer un numéro de téléphone valide.",
+      errMajor: "Veuillez sélectionner votre filière.",
+      errYear: "Veuillez sélectionner votre année académique.",
+      toast1: "Imane (Études anglaises) a rejoint la liste d'attente il y a 2 min",
+      toast2: "Youssef a soumis une candidature pour la liste d'attente",
+      toast3: "Salma, du département de Psychologie, vient de rejoindre la liste",
+      toast4: "Mehdi a réservé une place sur la liste d'attente",
+      footerLine: "Enactus FLSH Ain Chock — Université Hassan II de Casablanca",
+      faqTitle: "Questions fréquentes",
+      faq1_q: "Qu'est-ce qu'Enactus, simplement ?",
+      faq1_a: "Enactus est une organisation étudiante internationale à but non lucratif, active dans plus de 30 pays et dans différentes universités marocaines. Elle réunit des étudiants universitaires pour développer des projets d'entrepreneuriat social innovants qui répondent à de véritables défis communautaires et environnementaux.",
+      faq2_q: "Que vais-je gagner en tant que membre d'Enactus FLSH Ain Chock ?",
+      faq2_a: "Vous développez des compétences comportementales très recherchées (prise de parole en public, leadership, travail d'équipe), acquérez une véritable expérience de terrain à valoriser sur votre CV, construisez un solide réseau professionnel, participez à des compétitions nationales et internationales, et recevez des attestations officielles.",
+      faq3_q: "Puis-je proposer ma propre idée de projet social ?",
+      faq3_a: "Absolument ! Enactus encourage l'innovation. Lors de nos phases d'idéation en début d'année, les membres peuvent proposer des idées de projets, et l'équipe travaille ensemble pour les transformer en start-up durables sur le terrain.",
+      faq4_q: "Comment se déroule le processus de sélection après l'inscription ?",
+      faq4_a: "Le processus comporte 2 étapes principales : 1) L'examen du formulaire pour comprendre votre motivation et vos centres d'intérêt. 2) Un entretien court et convivial pour faire connaissance, discuter du département de votre choix et vérifier vos disponibilités.",
+      faq5_q: "Combien d'heures par semaine cela demande-t-il ? Est-ce que cela affecte mes études ?",
+      faq5_a: "En moyenne, quelques heures par semaine (réunions, ateliers, tâches d'équipe). Vos études universitaires restent toujours la priorité absolue ; les activités sont réduites ou suspendues pendant les périodes d'examens.",
+      faq6_q: "Ai-je besoin d'une expérience préalable ou d'une formation en économie pour rejoindre le club ?",
+      faq6_a: "Pas du tout ! Les étudiants de toutes les filières sont les bienvenus (Lettres, Langues, Sciences sociales, etc.). Enactus offre une formation complète et un accompagnement en leadership, marketing, design et gestion de projet.",
+      submitMsgError: "Une erreur s'est produite lors de l'envoi de votre candidature. Veuillez réessayer, ou écrivez-nous directement à hossin.rate@gmail.com.",
+      major_islamic: "Études islamiques", major_arabic: "Études arabes", major_french: "Études françaises",
+      major_english: "Études anglaises", major_spanish: "Études espagnoles", major_german: "Études allemandes",
+      major_italian: "Études italiennes", major_chinese: "Études chinoises", major_amazigh: "Études amazighes",
+      major_history: "Histoire et patrimoine", major_geo: "Géographie", major_sociology: "Sociologie",
+      major_psych: "Psychologie", major_journalism: "Journalisme et médias"
+    }
+  };
+
+  var currentLang = "en";
+
+  function t(key) {
+    return (translations[currentLang] && translations[currentLang][key]) || translations.en[key] || "";
+  }
+  function fmt(key, vars) {
+    var s = t(key);
+    for (var k in vars) { s = s.replace("{" + k + "}", vars[k]); }
+    return s;
+  }
+
+  function applyTranslations(lang) {
+    currentLang = lang;
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+    document.title = t("pageTitle");
+
+    document.getElementById("subtitleText").textContent = t("subtitle");
+    document.getElementById("sloganText").textContent = t("slogan");
+    document.getElementById("announcementTitle").textContent = t("announcementTitle");
+    document.getElementById("announcementSubtext").textContent = t("announcementSubtext");
+
+    updateSpotsUI(); // sets progressLabel, progressSubtext and the bar width together
+
+    document.getElementById("leaderboardTitle").textContent = t("leaderboardTitle");
+    document.getElementById("genderTitle").textContent = t("genderTitle");
+    document.getElementById("genderFemaleLabel").textContent = t("genderFemale");
+    document.getElementById("genderMaleLabel").textContent = t("genderMale");
+    document.getElementById("genderNote").textContent = t("genderNote");
+    renderGenderStats();
+    document.getElementById("deptChoiceTitle").textContent = t("deptChoiceTitle");
+    document.getElementById("academicYearTitle").textContent = t("academicYearTitle");
+
+    document.getElementById("formSectionTitle").textContent = t("formSectionTitle");
+    document.getElementById("lblFullName").textContent = t("labelFullName") + " *";
+    document.getElementById("fullName").placeholder = t("placeholderFullName");
+    document.getElementById("lblPhone").textContent = t("labelPhone") + " *";
+    document.getElementById("lblMajor").textContent = t("labelMajor") + " *";
+    document.getElementById("optMajorPlaceholder").textContent = t("selectMajorPlaceholder");
+    document.getElementById("lblYear").textContent = t("labelYear") + " *";
+    document.getElementById("optYearPlaceholder").textContent = t("selectYearPlaceholder");
+
+    document.getElementById("prefsSectionTitle").textContent = t("prefsSectionTitle");
+    document.getElementById("lblDept").textContent = t("labelDept") + " *";
+    document.getElementById("lblWhyJoin").textContent = t("labelWhyJoin") + " *";
+    document.getElementById("whyJoin").placeholder = t("placeholderWhyJoin");
+    document.getElementById("lblPrevExp").textContent = t("labelPrevExp");
+    document.getElementById("prevExp").placeholder = t("placeholderPrevExp");
+
+    document.getElementById("submitBtn").textContent = t("submitBtn");
+    document.getElementById("requiredNote").textContent = t("requiredNote");
+
+    document.getElementById("closedTitle").textContent = t("closedTitle");
+    document.getElementById("whatsappCardTitle").textContent = t("whatsappCardTitle");
+    document.getElementById("whatsappCardDesc").textContent = t("whatsappCardDesc");
+    document.getElementById("closedSubtext").textContent = t("closedSubtext");
+    document.getElementById("wlLblFullName").textContent = t("labelFullName") + " *";
+    document.getElementById("wlFullName").placeholder = t("placeholderFullName");
+    document.getElementById("wlLblPhone").textContent = t("labelPhone") + " *";
+    document.getElementById("waitlistBtn").textContent = t("waitlistBtn");
+
+    document.getElementById("footerLine").textContent = t("footerLine");
+    document.getElementById("modalClose").textContent = t("modalCloseBtn");
+
+    document.getElementById("faqTitle").textContent = t("faqTitle");
+    renderFAQ();
+
+    var i18nEls = document.querySelectorAll("[data-i18n]");
+    for (var i = 0; i < i18nEls.length; i++) {
+      i18nEls[i].textContent = t(i18nEls[i].getAttribute("data-i18n"));
+    }
+
+    renderLeaderboard();
+
+    var langBtns = document.querySelectorAll(".lang-btn");
+    for (var j = 0; j < langBtns.length; j++) {
+      langBtns[j].classList.toggle("active", langBtns[j].getAttribute("data-lang") === lang);
+    }
+  }
+
+  function renderStatList(containerId, items) {
+    var list = document.getElementById(containerId);
+    if (!list) return;
+    list.innerHTML = "";
+    items.forEach(function (item) {
+      var row = document.createElement("div");
+      var leadTag = item.rank === 1 ? ' 🔥 <span class="text-goldlight font-semibold">(' + t("leadTag") + ")</span>" : "";
+      var displayPct = statsRevealed ? item.percent : 0;
+      row.innerHTML =
+        '<div class="flex items-center justify-between text-xs text-navy/70 mb-1">' +
+          '<span class="flex items-center gap-2">' + (DEPT_ICONS[item.key] || TROPHY_ICON) + '<span>' + t(item.key) + leadTag + "</span></span>" +
+          '<span class="font-semibold text-navy/85 leader-percent" data-target="' + item.percent + '">' + displayPct + "%</span>" +
+        "</div>" +
+        '<div class="leader-track h-2.5"><div class="leader-fill" style="width:' + displayPct + '%"></div></div>';
+      list.appendChild(row);
+    });
+  }
+
+  function renderLeaderboard() {
+    renderStatList("leaderboardList", CONFIG.leaderboard);
+    renderStatList("deptChoiceList", CONFIG.deptChoice);
+    renderStatList("yearList", CONFIG.academicYear);
+  }
+
+  // FAQ accordion: one open item at a time. Rebuilt on every language switch so
+  // questions/answers stay in sync with the active language; re-opens nothing
+  // (starts collapsed) after a rebuild, which also happens on first render.
+  var FAQ_KEYS = ["faq1", "faq2", "faq3", "faq4", "faq5", "faq6"];
+  var CHEVRON_SVG = '<svg class="faq-chevron flex-shrink-0" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0F172A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+
+  function renderFAQ() {
+    var list = document.getElementById("faqList");
+    if (!list) return;
+    list.innerHTML = "";
+    FAQ_KEYS.forEach(function (key, idx) {
+      var item = document.createElement("div");
+      item.className = "faq-item rounded-xl border border-navy/10 hover:bg-gold/5 transition-colors";
+      item.innerHTML =
+        '<button type="button" class="faq-question w-full flex items-center justify-between gap-3 text-start px-4 py-3.5" data-faq-index="' + idx + '" aria-expanded="false">' +
+          '<span class="text-sm font-medium text-navy/90">' + t(key + "_q") + '</span>' +
+          CHEVRON_SVG +
+        '</button>' +
+        '<div class="faq-answer">' +
+          '<div><p class="px-4 pb-4 text-sm text-navy/60 leading-relaxed">' + t(key + "_a") + '</p></div>' +
+        '</div>';
+      list.appendChild(item);
+    });
+    list.querySelectorAll(".faq-question").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        toggleFAQ(parseInt(this.getAttribute("data-faq-index"), 10));
+      });
+    });
+  }
+
+  function toggleFAQ(idx) {
+    var items = document.querySelectorAll("#faqList .faq-item");
+    items.forEach(function (item, i) {
+      var btn = item.querySelector(".faq-question");
+      var answer = item.querySelector(".faq-answer");
+      var chevron = item.querySelector(".faq-chevron");
+      var wasOpen = btn.getAttribute("aria-expanded") === "true";
+      var open = i === idx && !wasOpen;
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+      answer.style.gridTemplateRows = open ? "1fr" : "0fr";
+      chevron.style.transform = open ? "rotate(180deg)" : "rotate(0deg)";
+    });
+  }
+
+  // Gender split bars/numbers: 0 before the reveal animation has played, real values after.
+  function renderGenderStats() {
+    var f = statsRevealed ? CONFIG.gender.female : 0;
+    var m = statsRevealed ? CONFIG.gender.male : 0;
+    document.getElementById("genderPercentF").textContent = f + "%";
+    document.getElementById("genderPercentM").textContent = m + "%";
+    document.getElementById("genderFillF").style.width = f + "%";
+    document.getElementById("genderFillM").style.width = m + "%";
+  }
+
+  var langButtons = document.querySelectorAll(".lang-btn");
+  for (var b = 0; b < langButtons.length; b++) {
+    langButtons[b].addEventListener("click", function () {
+      applyTranslations(this.getAttribute("data-lang"));
+    });
+  }
+
+  // ---- Registration open/closed state ----
+  // The countdown timer has been removed: registration is now permanently closed via
+  // CONFIG.isFull (see the announcement banner + waitlist mode at the top of this file).
+  function renderRegistrationState() {
+    var closed = CONFIG.isFull;
+    document.getElementById("openFormSection").classList.toggle("hidden", closed);
+    document.getElementById("closedSection").classList.toggle("hidden", !closed);
+  }
+  renderRegistrationState();
+
+  // ==================================================================================
+  // ---- Live stats reveal: smooth count-up numbers + progress-bar fill on scroll ----
+  // ==================================================================================
+  // Runs ONCE (guarded by statsRevealed), and only once the visitor has actually
+  // scrolled the stats section a good way into view (see the IntersectionObserver
+  // config below) — never immediately on page load just because the section happens
+  // to be present in the DOM. The department bars fill in one after another with a
+  // short stagger so the sequence reads as a deliberate, watchable reveal rather than
+  // everything jumping at once.
+  var STATS_ANIM_MS = 2500;       // 2.5s count-up duration for every number/percentage
+  var LEADER_STAGGER_MS = 150;    // delay between each department bar starting its reveal
+  var prefersReducedMotion = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+  function easeOutCubic(x) { return 1 - Math.pow(1 - x, 3); }
+
+  // Generic smooth count-up for a single number element (used for the staggered
+  // department bars, where each row animates independently on its own timer).
+  function animateNumber(el, from, to, duration, suffix) {
+    if (prefersReducedMotion) { el.textContent = to + suffix; return; }
+    var startTime = null;
+    function frame(ts) {
+      if (startTime === null) startTime = ts;
+      var progress = Math.min((ts - startTime) / duration, 1);
+      var eased = easeOutCubic(progress);
+      el.textContent = Math.round(from + (to - from) * eased) + suffix;
+      if (progress < 1) requestAnimationFrame(frame);
+      else el.textContent = to + suffix;
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function revealStats() {
+    if (statsRevealed) return;
+    statsRevealed = true;
+
+    var targetPercent = getProgressPercent();
+    var targetSpots = CONFIG.spotsLeft;
+    var targetFemale = CONFIG.gender.female;
+    var targetMale = CONFIG.gender.male;
+
+    var STAT_LISTS_SELECTOR = "#leaderboardList, #deptChoiceList, #yearList";
+    var leaderPercentEls = document.querySelectorAll(STAT_LISTS_SELECTOR.split(", ").map(function (s) { return s + " .leader-percent"; }).join(", "));
+    var leaderFillEls = document.querySelectorAll(STAT_LISTS_SELECTOR.split(", ").map(function (s) { return s + " .leader-fill"; }).join(", "));
+    var leaderTargets = [];
+    leaderPercentEls.forEach(function (el) { leaderTargets.push(parseInt(el.getAttribute("data-target"), 10) || 0); });
+
+    // Main progress bar + gender bars start together (no stagger needed here).
+    document.getElementById("progressFill").style.width = targetPercent + "%";
+    document.getElementById("genderFillF").style.width = targetFemale + "%";
+    document.getElementById("genderFillM").style.width = targetMale + "%";
+
+    // Department bars: staggered, one after another, each with its own bar-fill +
+    // its own independent count-up so the sequence visibly cascades down the list.
+    leaderFillEls.forEach(function (fillEl, i) {
+      var target = leaderTargets[i];
+      var percentEl = leaderPercentEls[i];
+      var delay = prefersReducedMotion ? 0 : i * LEADER_STAGGER_MS;
+      setTimeout(function () {
+        fillEl.style.width = target + "%";
+        animateNumber(percentEl, 0, target, STATS_ANIM_MS, "%");
+      }, delay);
+    });
+
+    function setFinalNumbers() {
+      document.getElementById("progressLabel").textContent = fmt("progressLabel", { p: targetPercent });
+      document.getElementById("progressSubtext").textContent = fmt("progressSubtext", { n: targetSpots });
+      document.getElementById("genderPercentF").textContent = targetFemale + "%";
+      document.getElementById("genderPercentM").textContent = targetMale + "%";
+    }
+
+    // Respect the visitor's OS-level "reduce motion" preference: snap straight to the
+    // final numbers, let the bars fill instantly too (the CSS media query above already
+    // strips the width transition in that case).
+    if (prefersReducedMotion) { setFinalNumbers(); return; }
+
+    var startTime = null;
+    function frame(ts) {
+      if (startTime === null) startTime = ts;
+      var progress = Math.min((ts - startTime) / STATS_ANIM_MS, 1);
+      var eased = easeOutCubic(progress);
+
+      var curPercent = Math.round(targetPercent * eased);
+      var curSpots = Math.round(targetSpots * eased);
+
+      document.getElementById("progressLabel").textContent = fmt("progressLabel", { p: curPercent });
+      document.getElementById("progressSubtext").textContent = fmt("progressSubtext", { n: curSpots });
+      document.getElementById("genderPercentF").textContent = Math.round(targetFemale * eased) + "%";
+      document.getElementById("genderPercentM").textContent = Math.round(targetMale * eased) + "%";
+
+      if (progress < 1) {
+        requestAnimationFrame(frame);
+      } else {
+        setFinalNumbers(); // snap to exact integers at the very end
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  var statsRevealTargets = [document.getElementById("progressSection"), document.getElementById("statsSection")].filter(Boolean);
+
+  if ("IntersectionObserver" in window) {
+    // threshold 0.4 + a negative bottom rootMargin: the section must genuinely be
+    // scrolled ~40% into the viewport before the reveal fires — so on page load, a
+    // section that merely peeks in at the bottom edge of the screen will NOT trigger
+    // it immediately; the visitor has to actually scroll for it to play.
+    var statsObserver = new IntersectionObserver(
+      function (entries) {
+        for (var i = 0; i < entries.length; i++) {
+          if (entries[i].isIntersecting) {
+            revealStats();
+            statsObserver.disconnect();
+            break;
+          }
+        }
+      },
+      { threshold: 0.4, rootMargin: "0px 0px -50px 0px" }
+    );
+    statsRevealTargets.forEach(function (el) { statsObserver.observe(el); });
+  } else {
+    // No IntersectionObserver support (very old browser): just reveal on load.
+    revealStats();
+  }
+
+  // ---- Validation helpers ----
+  var phonePattern = /^[0-9+\-\s().]{8,20}$/;
+
+  function setErr(id, msgKey) {
+    document.getElementById(id).classList.add("err");
+    document.getElementById(id + "-msg").textContent = t(msgKey);
+  }
+  function clearErr(id) {
+    document.getElementById(id).classList.remove("err");
+    document.getElementById(id + "-msg").textContent = "";
+  }
+  function wireLiveClear(ids) {
+    ids.forEach(function (id) {
+      var el = document.getElementById(id);
+      el.addEventListener("input", function () { if (this.value.trim()) clearErr(id); });
+      el.addEventListener("change", function () { if (this.value.trim()) clearErr(id); });
+    });
+  }
+
+  // ---- Main form ----
+  var mainForm = document.getElementById("mainForm");
+  var mainRequired = ["fullName", "phone", "major", "year", "whyJoin"];
+  wireLiveClear(mainRequired);
+
+  // Department chips: max 2 selections, with live visual state
+  var deptCheckboxes = document.querySelectorAll(".dept-checkbox");
+  var MAX_DEPTS = 2;
+  function updateDeptChipsState() {
+    var checkedCount = 0;
+    deptCheckboxes.forEach(function (cb) { if (cb.checked) checkedCount++; });
+    deptCheckboxes.forEach(function (cb) {
+      var chip = cb.closest(".dept-chip");
+      chip.classList.toggle("active", cb.checked);
+      if (!cb.checked && checkedCount >= MAX_DEPTS) {
+        cb.disabled = true;
+        chip.classList.add("disabled");
+      } else {
+        cb.disabled = false;
+        chip.classList.remove("disabled");
+      }
+    });
+    if (checkedCount > 0) clearDeptErr();
+  }
+  deptCheckboxes.forEach(function (cb) { cb.addEventListener("change", updateDeptChipsState); });
+
+  function clearDeptErr() {
+    document.getElementById("deptOptions").classList.remove("err-group");
+    document.getElementById("deptChoice-msg").textContent = "";
+  }
+  function setDeptErr() {
+    document.getElementById("deptOptions").classList.add("err-group");
+    document.getElementById("deptChoice-msg").textContent = t("errDept");
+  }
+
+  function validateMain() {
+    var ok = true, first = null;
+    mainRequired.forEach(clearErr);
+    clearDeptErr();
+    function check(id, cond, key) {
+      if (!cond) { setErr(id, key); ok = false; if (!first) first = document.getElementById(id); }
+    }
+    check("fullName", document.getElementById("fullName").value.trim().length >= 2, "errFullName");
+    check("phone", phonePattern.test(document.getElementById("phone").value.trim()), "errPhone");
+    check("major", document.getElementById("major").value !== "", "errMajor");
+    check("year", document.getElementById("year").value !== "", "errYear");
+    var deptCount = document.querySelectorAll(".dept-checkbox:checked").length;
+    if (deptCount < 1) {
+      setDeptErr();
+      ok = false;
+      if (!first) first = document.getElementById("deptOptions");
+    }
+    check("whyJoin", document.getElementById("whyJoin").value.trim().length >= 10, "errWhyJoin");
+    if (first) first.scrollIntoView({ behavior: "smooth", block: "center" });
+    return ok;
+  }
+
+  // ---- Waitlist form ----
+  var wlForm = document.getElementById("waitlistForm");
+  var wlRequired = ["wlFullName", "wlPhone"];
+  wireLiveClear(wlRequired);
+
+  function validateWaitlist() {
+    var ok = true, first = null;
+    wlRequired.forEach(clearErr);
+    function check(id, cond, key) {
+      if (!cond) { setErr(id, key); ok = false; if (!first) first = document.getElementById(id); }
+    }
+    check("wlFullName", document.getElementById("wlFullName").value.trim().length >= 2, "errFullName");
+    check("wlPhone", phonePattern.test(document.getElementById("wlPhone").value.trim()), "errPhone");
+    if (first) first.scrollIntoView({ behavior: "smooth", block: "center" });
+    return ok;
+  }
+
+  // ---- Shared FormSubmit AJAX submission ----
+  // Any seat-count change is handled by the caller BEFORE this runs (see mainForm's
+  // submit handler below) — this function only ever takes care of sending the data
+  // and showing the success modal / error message.
+  function submitViaFormSubmit(form, msgElId, onSuccessKey) {
+    var btn = form.querySelector('button[type="submit"]');
+    var msgEl = document.getElementById(msgElId);
+    msgEl.textContent = "";
+    btn.disabled = true;
+    var original = btn.textContent;
+    btn.textContent = "…";
+    fetch("https://formsubmit.co/ajax/hossin.rate@gmail.com", {
+      method: "POST",
+      headers: { Accept: "application/json" },
+      body: new FormData(form)
+    })
+      .then(function (res) { if (!res.ok) throw new Error("bad status"); return res.json(); })
+      .then(function () {
+        openModal(onSuccessKey);
+        form.reset();
+      })
+      .catch(function () { msgEl.textContent = t("submitMsgError"); })
+      .finally(function () { btn.disabled = false; btn.textContent = original; });
+  }
+
+  mainForm.addEventListener("submit", function (e) {
+    // Stop the browser's native full-page-reload submission immediately.
+    e.preventDefault();
+    if (!validateMain()) return;
+    // Official registration form: the moment the click is valid, take 1 seat off
+    // the remaining count, persist it to localStorage, and refresh every on-screen
+    // number/progress-bar right away — the visitor sees this instantly, with no
+    // need to wait for the network request below to finish.
+    decrementSpotsAndRefresh();
+    // Now actually send the application data in the background.
+    submitViaFormSubmit(mainForm, "mainSubmitMsg", "successText");
+  });
+
+  wlForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (!validateWaitlist()) return;
+    // Waiting list form never touches the seat counter — it's a separate list.
+    submitViaFormSubmit(wlForm, "wlSubmitMsg", "successWaitlistText");
+  });
+
+  // ---- Success modal ----
+  function openModal(textKey) {
+    document.getElementById("modalTitle").textContent = t("successTitle");
+    document.getElementById("modalText").textContent = t(textKey);
+    var modal = document.getElementById("successModal");
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+    document.body.style.overflow = "hidden";
+    document.getElementById("modalClose").focus();
+    // Small celebratory burst — skipped if the CDN script failed to load (e.g. offline)
+    // or the visitor has asked the OS for reduced motion.
+    if (typeof confetti === "function" && !prefersReducedMotion) {
+      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+    }
+  }
+  function closeModal() {
+    var modal = document.getElementById("successModal");
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+    document.body.style.overflow = "";
+  }
+  document.getElementById("modalClose").addEventListener("click", closeModal);
+  document.getElementById("modalBackdrop").addEventListener("click", closeModal);
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModal(); });
+
+  // ---- Live activity toast: rotates a random bilingual "someone just joined" message
+  // every 12–18s, stays visible 4s, then fades out. Purely cosmetic social proof — no
+  // real data behind it. Paused while the tab is hidden so it never queues up a burst
+  // of toasts the visitor comes back to, and skipped entirely under reduced motion.
+  var TOAST_KEYS = ["toast1", "toast2", "toast3", "toast4"];
+  var liveToastEl = document.getElementById("liveToast");
+  var liveToastTextEl = document.getElementById("liveToastText");
+  var liveToastCloseBtn = document.getElementById("liveToastClose");
+  var toastHideTimer = null;
+  var toastScheduleTimer = null;
+  var toastManuallyClosed = false;
+
+  function showRandomToast() {
+    if (document.hidden) return;
+    var key = TOAST_KEYS[Math.floor(Math.random() * TOAST_KEYS.length)];
+    liveToastTextEl.textContent = t(key);
+    liveToastEl.classList.remove("hidden");
+    void liveToastEl.offsetWidth; // force reflow so the opacity transition actually plays
+    liveToastEl.classList.remove("opacity-0");
+    liveToastEl.classList.add("opacity-100");
+    clearTimeout(toastHideTimer);
+    toastHideTimer = setTimeout(hideToast, 4000);
+  }
+
+  function hideToast() {
+    liveToastEl.classList.remove("opacity-100");
+    liveToastEl.classList.add("opacity-0");
+    setTimeout(function () { liveToastEl.classList.add("hidden"); }, 500); // matches duration-500
+  }
+
+  function scheduleNextToast() {
+    var delay = 12000 + Math.random() * 6000; // 12–18s
+    toastScheduleTimer = setTimeout(function () {
+      showRandomToast();
+      scheduleNextToast();
+    }, delay);
+  }
+
+  liveToastCloseBtn.addEventListener("click", function () {
+    clearTimeout(toastHideTimer);
+    hideToast();
+  });
+
+  if (!prefersReducedMotion) {
+    scheduleNextToast();
+  }
+
+  // ---- Init ----
+  applyTranslations("en");
+})();
+</script>
+</body>
+</html>

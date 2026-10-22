@@ -88,7 +88,7 @@
   }
   .step-connector { position: absolute; background: rgba(15,23,42,.12); z-index: 0; }
   .step-connector-v { left: 17px; top: 17px; bottom: 17px; width: 2px; }
-  .step-connector-h { left: 12.5%; right: 12.5%; top: 17px; height: 2px; }
+  .step-connector-h { left: 10%; right: 10%; top: 17px; height: 2px; }
   @media (prefers-reduced-motion: reduce) { .step-circle-active, .step-pulse-dot { animation: none !important; } }
 
   /* ---- Footer social icons ---- */
@@ -309,9 +309,16 @@
           </div>
 
           <div class="flex sm:flex-col items-start sm:items-center gap-4 sm:gap-3 sm:flex-1 sm:text-center">
-            <div class="step-circle step-circle-active flex-shrink-0">2</div>
+            <div class="step-circle step-circle-done flex-shrink-0" aria-label="Completed">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            </div>
+            <p data-i18n="step2Label" class="text-sm font-medium text-navy/55"></p>
+          </div>
+
+          <div class="flex sm:flex-col items-start sm:items-center gap-4 sm:gap-3 sm:flex-1 sm:text-center">
+            <div class="step-circle step-circle-active flex-shrink-0">3</div>
             <div>
-              <p data-i18n="step2Label" class="text-sm font-semibold text-navy/90"></p>
+              <p data-i18n="step3Label" class="text-sm font-semibold text-navy/90"></p>
               <p class="text-xs font-semibold text-goldlight mt-1 flex items-center gap-1.5 sm:justify-center">
                 <span class="step-pulse-dot" aria-hidden="true"></span>
                 <span data-i18n="stepActiveBadge"></span>
@@ -320,13 +327,13 @@
           </div>
 
           <div class="flex sm:flex-col items-start sm:items-center gap-4 sm:gap-3 sm:flex-1 sm:text-center">
-            <div class="step-circle flex-shrink-0">3</div>
-            <p data-i18n="step3Label" class="text-sm font-medium text-navy/55"></p>
+            <div class="step-circle flex-shrink-0">4</div>
+            <p data-i18n="step4Label" class="text-sm font-medium text-navy/55"></p>
           </div>
 
           <div class="flex sm:flex-col items-start sm:items-center gap-4 sm:gap-3 sm:flex-1 sm:text-center">
-            <div class="step-circle flex-shrink-0">4</div>
-            <p data-i18n="step4Label" class="text-sm font-medium text-navy/55"></p>
+            <div class="step-circle flex-shrink-0">5</div>
+            <p data-i18n="step5Label" class="text-sm font-medium text-navy/55"></p>
           </div>
         </div>
       </div>
@@ -446,11 +453,6 @@
     <section id="closedSection" class="reveal glass rounded-2xl p-5 sm:p-8 hidden" style="animation-delay:.15s">
       <p id="closedTitle" class="text-center text-goldlight font-semibold mb-2"></p>
       <p id="closedSubtext" class="text-center text-sm text-navy/60 mb-6"></p>
-
-      <div class="whatsapp-card rounded-xl p-4 mb-6">
-        <p id="whatsappCardTitle" class="font-semibold text-sm text-navy/90 mb-1"></p>
-        <p id="whatsappCardDesc" class="text-xs text-navy/60 leading-relaxed"></p>
-      </div>
 
       <form id="waitlistForm" novalidate action="https://formsubmit.co/hossin.rate@gmail.com" method="POST" class="space-y-4">
         <input type="hidden" name="_subject" value="Enactus FLSH Ain Chock — Waiting list entry">
@@ -764,8 +766,9 @@
       step1Label: "1. Fill Online Form",
       stepActiveBadge: "📍 You are here",
       step2Label: "2. Application Review & Community Addition",
-      step3Label: "3. Oral Interviews",
-      step4Label: "4. Selection & Onboarding",
+      step3Label: "3. Orientation Day",
+      step4Label: "4. Skills Development Workshops",
+      step5Label: "5. First Project Phase",
       formSectionTitle: "Registration Form",
       labelFullName: "Full Name",
       placeholderFullName: "e.g. Yasmine El Amrani",
@@ -790,8 +793,6 @@
       requiredNote: "Fields marked * are required.",
       closedTitle: "🔒 Official registration is now closed as spots are filled.",
       closedSubtext: "You can register for the Waiting List and we will contact you if a spot opens up.",
-      whatsappCardTitle: "📢 Adding Applicants to the Official WhatsApp Community Starting Tomorrow!",
-      whatsappCardDesc: "Starting tomorrow, our team will start adding all registered applicants to our official WhatsApp Community to share interview schedules and team updates.",
       waitlistBtn: "Join Waiting List",
       successTitle: "Application received",
       successText: "Thank you for applying! We will contact you soon for the interview.",
@@ -853,8 +854,9 @@
       step1Label: "1. ملء الاستمارة الإلكترونية",
       stepActiveBadge: "📍 نحن هنا الآن",
       step2Label: "2. دراسة الطلبات والإضافة لمجتمع الواتساب",
-      step3Label: "3. المقابلات الشفهية",
-      step4Label: "4. الترحيب بالأعضاء المقبولين",
+      step3Label: "3. يوم التوجيه",
+      step4Label: "4. ورشات تطوير المهارات",
+      step5Label: "5. مرحلة المشروع الأول",
       formSectionTitle: "استمارة التسجيل",
       labelFullName: "الاسم الكامل",
       placeholderFullName: "مثال: ياسمين العمراني",
@@ -879,8 +881,6 @@
       requiredNote: "الحقول المعلمة بـ * إلزامية.",
       closedTitle: "🔒 التسجيل الرسمي مغلق الآن لامتلاء المقاعد.",
       closedSubtext: "يمكنك التسجيل في قائمة الانتظار وسنتواصل معك في حال توفر مقعد.",
-      whatsappCardTitle: "📢 إضافة المترشحين لمجتمع الواتساب الرسمي ابتداءً من الغد!",
-      whatsappCardDesc: "ابتداءً من الغد، سيبدأ فريقنا بإضافة جميع المترشحين الذين قدموا استمارتهم لمجتمع الواتساب الرسمي الخاص بالنادي لمتابعة مواعيد المقابلات الشفهية والمستجدات.",
       waitlistBtn: "الانضمام إلى قائمة الانتظار",
       successTitle: "تم استلام الطلب",
       successText: "شكرا لتقديمك! سنتواصل معك قريبا لإجراء المقابلة.",
@@ -939,8 +939,9 @@
       step1Label: "1. Remplir le formulaire en ligne",
       stepActiveBadge: "📍 Vous êtes ici",
       step2Label: "2. Étude des candidatures et ajout à la communauté WhatsApp",
-      step3Label: "3. Entretiens oraux",
-      step4Label: "4. Sélection et accueil des membres",
+      step3Label: "3. Journée d'orientation",
+      step4Label: "4. Ateliers de développement des compétences",
+      step5Label: "5. Première phase de projet",
       formSectionTitle: "Formulaire d'inscription",
       labelFullName: "Nom complet",
       placeholderFullName: "ex. Yasmine El Amrani",
@@ -965,8 +966,6 @@
       requiredNote: "Les champs marqués d'un * sont obligatoires.",
       closedTitle: "🔒 Les inscriptions officielles sont désormais closes, les places étant complètes.",
       closedSubtext: "Vous pouvez vous inscrire sur la liste d'attente et nous vous contacterons si une place se libère.",
-      whatsappCardTitle: "📢 Ajout des candidats à la communauté WhatsApp officielle dès demain !",
-      whatsappCardDesc: "À partir de demain, notre équipe commencera à ajouter tous les candidats inscrits à notre communauté WhatsApp officielle afin de partager les horaires d'entretien et les actualités de l'équipe.",
       waitlistBtn: "Rejoindre la liste d'attente",
       successTitle: "Candidature reçue",
       successText: "Merci pour votre candidature ! Nous vous contacterons bientôt pour l'entretien.",
@@ -1058,8 +1057,6 @@
     document.getElementById("requiredNote").textContent = t("requiredNote");
 
     document.getElementById("closedTitle").textContent = t("closedTitle");
-    document.getElementById("whatsappCardTitle").textContent = t("whatsappCardTitle");
-    document.getElementById("whatsappCardDesc").textContent = t("whatsappCardDesc");
     document.getElementById("closedSubtext").textContent = t("closedSubtext");
     document.getElementById("wlLblFullName").textContent = t("labelFullName") + " *";
     document.getElementById("wlFullName").placeholder = t("placeholderFullName");

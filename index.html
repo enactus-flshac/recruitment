@@ -117,7 +117,16 @@
   .lang-btn.active { background: #FFC800; color:#0F172A; border-color: transparent; font-weight: 600; }
   .lang-btn:hover:not(.active) { border-color: #FFC800; color:#0F172A; }
 
-  .announce-banner { background: linear-gradient(100deg,#FFE866,#FFC800); border-bottom: 2px solid #0F172A; }
+  /* Announcement banner: high-contrast navy + gold; direction follows <html dir> */
+  .announce-banner { background: linear-gradient(100deg,#0F172A 0%,#312E81 55%,#6D28D9 100%); border-bottom: 3px solid #FFC800; color:#FFFFFF; }
+  .announce-inner { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:.65rem 1rem; text-align:center; }
+  .announce-text { font-weight:700; line-height:1.5; color:#FFFFFF; }
+  .announce-cta { display:inline-flex; align-items:center; gap:.4rem; padding:.5rem 1.15rem; border-radius:999px; background:#FFC800; color:#0F172A; font-weight:800; font-size:.85rem; text-decoration:none; white-space:nowrap; box-shadow:0 2px 0 rgba(0,0,0,.25), 0 0 0 0 rgba(255,200,0,.6); transition: transform .2s ease, background-color .2s ease, box-shadow .2s ease; animation: ctaPulse 2.2s ease-out infinite; }
+  .announce-cta:hover, .announce-cta:focus-visible { background:#FFFFFF; transform: translateY(-2px) scale(1.05); box-shadow:0 6px 16px rgba(255,200,0,.45); animation:none; }
+  .announce-cta:active { transform: translateY(0) scale(.98); }
+  .announce-cta:focus-visible { outline:2px solid #FFFFFF; outline-offset:3px; }
+  @keyframes ctaPulse { 0% { box-shadow:0 2px 0 rgba(0,0,0,.25), 0 0 0 0 rgba(255,200,0,.55);} 70% { box-shadow:0 2px 0 rgba(0,0,0,.25), 0 0 0 12px rgba(255,200,0,0);} 100% { box-shadow:0 2px 0 rgba(0,0,0,.25), 0 0 0 0 rgba(255,200,0,0);} }
+  @media (prefers-reduced-motion: reduce) { .announce-cta { animation:none !important; transition:none !important; } }
 
   .wave-divider { display: block; width: 100%; height: 14px; line-height: 0; }
 
@@ -184,11 +193,11 @@
     </svg>
   </div>
 
-  <!-- Official registration closed / waitlist announcement banner -->
-  <div class="announce-banner relative z-30">
-    <div class="max-w-2xl mx-auto px-4 py-4 text-center">
-      <p id="announcementTitle" class="font-bold text-sm sm:text-base text-navy"></p>
-      <p id="announcementSubtext" class="text-xs sm:text-sm text-navy/70 mt-1.5 max-w-md mx-auto"></p>
+  <!-- Announcement banner: University Week of Art & Culture -->
+  <div class="announce-banner relative z-30" role="region" aria-label="Announcement">
+    <div class="max-w-4xl mx-auto px-4 py-3 announce-inner">
+      <p id="announcementTitle" class="announce-text text-sm sm:text-base"></p>
+      <a id="announcementCta" class="announce-cta" href="https://enactus-flshac.github.io/cultural-week/" target="_blank" rel="noopener noreferrer"></a>
     </div>
   </div>
 
@@ -745,8 +754,8 @@
       pageTitle: "Enactus FLSH Ain Chock — Recruitment Form",
       subtitle: "Recruitment Form",
       slogan: "Join us to create social impact through entrepreneurial action.",
-      announcementTitle: "🔒 Official Registration Closed — Waiting List Open!",
-      announcementSubtext: "Official registration has closed! Join the waiting list below to get priority if a spot opens up.",
+      announcementTitle: "✨ Step into the spotlight! Showcase your art and secure your spot in the University Week of Art & Culture.",
+      announcementCta: "Register Now 🚀",
       urgencyText: "🚨 Only {n} spots left to reach our quota for this season!",
       days: "Days", hours: "Hours", minutes: "Minutes", seconds: "Seconds",
       countdownExpired: "⛔ The registration deadline has passed.",
@@ -833,8 +842,8 @@
       pageTitle: "Enactus FLSH Ain Chock — استمارة التسجيل",
       subtitle: "استمارة التسجيل",
       slogan: "انضم إلينا لخلق أثر اجتماعي من خلال العمل الريادي.",
-      announcementTitle: "🔒 تم إغلاق التسجيل الرسمي — قائمة الانتظار مفتوحة الآن!",
-      announcementSubtext: "تم إغلاق التسجيل الرسمي! انضم إلى قائمة الانتظار أدناه للحصول على الأولوية في حال توفر مقعد.",
+      announcementTitle: "✨ اصنع بصمتك الخاصة! اعرض فنك وتألق في الأسبوع الجامعي للفن والثقافة.",
+      announcementCta: "سجل الآن 🚀",
       urgencyText: "🚨 تبقى {n} مقعدا فقط للوصول إلى حصتنا لهذا الموسم!",
       days: "أيام", hours: "ساعات", minutes: "دقائق", seconds: "ثواني",
       countdownExpired: "⛔ لقد انتهى الموعد النهائي للتسجيل.",
@@ -921,8 +930,8 @@
       pageTitle: "Enactus FLSH Ain Chock — Formulaire de recrutement",
       subtitle: "Formulaire de recrutement",
       slogan: "Rejoignez-nous pour créer un impact social grâce à l'action entrepreneuriale.",
-      announcementTitle: "🔒 Inscriptions officielles closes — Liste d'attente ouverte !",
-      announcementSubtext: "Les inscriptions officielles sont closes ! Rejoignez la liste d'attente ci-dessous pour être prioritaire en cas de place disponible.",
+      announcementTitle: "✨ Entrez sous les projecteurs ! Participez à la Semaine de l'Art et de la Culture et révélez votre talent.",
+      announcementCta: "S'inscrire maintenant 🚀",
       urgencyText: "🚨 Il ne reste que {n} places pour atteindre notre quota de cette saison !",
       days: "Jours", hours: "Heures", minutes: "Minutes", seconds: "Secondes",
       countdownExpired: "⛔ La date limite d'inscription est dépassée.",
@@ -1024,7 +1033,8 @@
     document.getElementById("subtitleText").textContent = t("subtitle");
     document.getElementById("sloganText").textContent = t("slogan");
     document.getElementById("announcementTitle").textContent = t("announcementTitle");
-    document.getElementById("announcementSubtext").textContent = t("announcementSubtext");
+    var annCta = document.getElementById("announcementCta");
+    annCta.textContent = t("announcementCta");
 
     updateSpotsUI(); // sets progressLabel, progressSubtext and the bar width together
 

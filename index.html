@@ -117,16 +117,18 @@
   .lang-btn.active { background: #FFC800; color:#0F172A; border-color: transparent; font-weight: 600; }
   .lang-btn:hover:not(.active) { border-color: #FFC800; color:#0F172A; }
 
-  /* Announcement banner: high-contrast navy + gold; direction follows <html dir> */
-  .announce-banner { background: linear-gradient(100deg,#0F172A 0%,#312E81 55%,#6D28D9 100%); border-bottom: 3px solid #FFC800; color:#FFFFFF; }
-  .announce-inner { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:.65rem 1rem; text-align:center; }
-  .announce-text { font-weight:700; line-height:1.5; color:#FFFFFF; }
-  .announce-cta { display:inline-flex; align-items:center; gap:.4rem; padding:.5rem 1.15rem; border-radius:999px; background:#FFC800; color:#0F172A; font-weight:800; font-size:.85rem; text-decoration:none; white-space:nowrap; box-shadow:0 2px 0 rgba(0,0,0,.25), 0 0 0 0 rgba(255,200,0,.6); transition: transform .2s ease, background-color .2s ease, box-shadow .2s ease; animation: ctaPulse 2.2s ease-out infinite; }
-  .announce-cta:hover, .announce-cta:focus-visible { background:#FFFFFF; transform: translateY(-2px) scale(1.05); box-shadow:0 6px 16px rgba(255,200,0,.45); animation:none; }
-  .announce-cta:active { transform: translateY(0) scale(.98); }
-  .announce-cta:focus-visible { outline:2px solid #FFFFFF; outline-offset:3px; }
-  @keyframes ctaPulse { 0% { box-shadow:0 2px 0 rgba(0,0,0,.25), 0 0 0 0 rgba(255,200,0,.55);} 70% { box-shadow:0 2px 0 rgba(0,0,0,.25), 0 0 0 12px rgba(255,200,0,0);} 100% { box-shadow:0 2px 0 rgba(0,0,0,.25), 0 0 0 0 rgba(255,200,0,0);} }
-  @media (prefers-reduced-motion: reduce) { .announce-cta { animation:none !important; transition:none !important; } }
+  /* ---- Slim announcement marquee ---- */
+  .announce-banner { display:block; background: linear-gradient(100deg,#0F172A 0%,#312E81 55%,#6D28D9 100%); border-bottom: 2px solid #FFC800; color:#FFFFFF; text-decoration:none; overflow:hidden; cursor:pointer; }
+  .announce-banner:hover .announce-track { animation-play-state: paused; }
+  .announce-banner:focus-visible { outline:2px solid #FFC800; outline-offset:-2px; }
+  .announce-marquee { overflow:hidden; white-space:nowrap; padding:.3rem 0; direction:ltr; }
+  .announce-track { display:inline-flex; width:max-content; animation: marqueeLTR 25s linear infinite; }
+  .announce-item { padding-inline:2.5rem; font-size:.8rem; font-weight:600; line-height:1.4; }
+  @keyframes marqueeLTR { from { transform:translateX(0);} to { transform:translateX(-50%);} }
+  @keyframes marqueeRTL { from { transform:translateX(-50%);} to { transform:translateX(0);} }
+  html[dir="rtl"] .announce-track { animation-name: marqueeRTL; }
+  @media (max-width:640px) { .announce-item { font-size:.75rem; padding-inline:1.5rem; } .announce-track { animation-duration:18s; } }
+  @media (prefers-reduced-motion: reduce) { .announce-track { animation:none !important; } }
 
   .wave-divider { display: block; width: 100%; height: 14px; line-height: 0; }
 
@@ -146,8 +148,6 @@
   #deptOptions.err-group .dept-chip { border-color: rgba(220,38,38,.75); }
 
   /* ---- Enactus-style icon badges (leaderboard + gender rows) ---- */
-  /* .enactus-icon-badge is an alias of .icon-badge — both classes are applied
-     together on every badge, so either selector on its own will style it. */
   .icon-badge, .enactus-icon-badge {
     display: inline-flex;
     align-items: center;
@@ -193,13 +193,12 @@
     </svg>
   </div>
 
-  <!-- Announcement banner: University Week of Art & Culture -->
-  <div class="announce-banner relative z-30" role="region" aria-label="Announcement">
-    <div class="max-w-4xl mx-auto px-4 py-3 announce-inner">
-      <p id="announcementTitle" class="announce-text text-sm sm:text-base"></p>
-      <a id="announcementCta" class="announce-cta" href="https://enactus-flshac.github.io/cultural-week/" target="_blank" rel="noopener noreferrer"></a>
+  <!-- Announcement banner: slim clickable marquee -->
+  <a id="announcementBanner" class="announce-banner relative z-30" href="https://enactus-flshac.github.io/cultural-week/" target="_blank" rel="noopener noreferrer">
+    <div class="announce-marquee">
+      <div id="announceTrack" class="announce-track"></div>
     </div>
-  </div>
+  </a>
 
   <main class="relative z-10 mx-auto max-w-2xl px-4 sm:px-6 py-10">
 
@@ -545,9 +544,6 @@
 <script>
 (function () {
   // ====== CONFIG — the ONLY thing you should edit after real applications come in ======
-  // After you receive a new application by email, just lower spotsLeft by 1 (or set isFull
-  // to true once you're done). The progress bar % and the waitlist switch both update
-  // automatically from this one number — nothing else in the file needs to change.
   var CONFIG = {
     deadlineISO: "2026-09-28T23:59:59+01:00", // Casablanca time (UTC+1) — unused now registration is permanently closed, kept for reference
     isFull: true,                             // registration permanently closed — waitlist mode
@@ -573,14 +569,9 @@
     ]
   };
   // ====== LIVE, NO-DATABASE SEAT COUNTER ======
-  // spotsLeft now lives in localStorage so it survives page refreshes on this device/browser.
-  // Every time the main registration form is submitted successfully, the count is decremented
-  // by 1, the progress bar / texts update instantly (no reload), and — once it hits 0, or the
-  // countdown deadline passes — the form automatically swaps to the Waiting List.
   // NOTE: because localStorage is local to each visitor's browser, this is a per-device demo
-  // counter, not a real shared count synced across every visitor. Wire it to a real backend
-  // (Google Sheets, Firebase, a small API, etc.) if you need one true number for everyone.
-  var SPOTS_STORAGE_KEY = "enactusFlshAinChock_waitlist_mode_v2"; // bumped so every visitor's browser immediately re-reads waitlist mode, instead of keeping an old cached seat count
+  // counter, not a real shared count synced across every visitor.
+  var SPOTS_STORAGE_KEY = "enactusFlshAinChock_waitlist_mode_v2";
 
   function loadSpotsLeft() {
     try {
@@ -589,23 +580,20 @@
         return Math.max(0, Math.min(CONFIG.totalSpots, parseInt(stored, 10)));
       }
     } catch (e) { /* localStorage unavailable — fall back to CONFIG default below */ }
-    return CONFIG.spotsLeft; // first-ever visit on this device: use the initial value (14)
+    return CONFIG.spotsLeft;
   }
 
   function saveSpotsLeft(value) {
     try { localStorage.setItem(SPOTS_STORAGE_KEY, String(value)); } catch (e) { /* ignore */ }
   }
 
-  // Initialize spotsLeft from localStorage (or seed it on first visit)
   CONFIG.spotsLeft = loadSpotsLeft();
   saveSpotsLeft(CONFIG.spotsLeft);
   if (CONFIG.spotsLeft <= 0) {
     CONFIG.spotsLeft = 0;
-    CONFIG.isFull = true; // no seats left on this device's last known count → force waitlist
+    CONFIG.isFull = true;
   }
 
-  // Whether the animated "count up" reveal has already played once (page load / first scroll into view).
-  // Before it plays, every percentage/seat number below shows 0 on purpose — see revealStats() further down.
   var statsRevealed = false;
 
   function getProgressPercent() {
@@ -613,7 +601,6 @@
     return Math.max(0, Math.min(100, Math.round(pct)));
   }
 
-  // Refresh every on-screen number that depends on spotsLeft, instantly, no reload.
   function updateSpotsUI() {
     var n = statsRevealed ? CONFIG.spotsLeft : 0;
     var p = statsRevealed ? getProgressPercent() : 0;
@@ -622,8 +609,6 @@
     document.getElementById("progressFill").style.width = p + "%";
   }
 
-  // Small "pop" pulse on the numbers that just changed, reusing the .tick keyframe already
-  // defined in the stylesheet for the countdown digits.
   function pulseTick(id) {
     var el = document.getElementById(id);
     el.classList.remove("tick");
@@ -631,8 +616,6 @@
     el.classList.add("tick");
   }
 
-  // Called right after a successful main-form submission: -1 seat, save, refresh UI,
-  // and auto-switch to the waiting list the moment seats hit 0.
   function decrementSpotsAndRefresh() {
     if (CONFIG.spotsLeft > 0) {
       CONFIG.spotsLeft -= 1;
@@ -645,9 +628,8 @@
     updateSpotsUI();
     pulseTick("progressLabel");
     pulseTick("progressSubtext");
-    renderRegistrationState(); // auto-hides the open form / shows the waitlist form if now full
+    renderRegistrationState();
   }
-  // Wraps any inline SVG path-set in the yellow Enactus badge circle.
   function makeBadge(innerPaths) {
     return '<span class="icon-badge enactus-icon-badge" aria-hidden="true">' +
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
@@ -656,9 +638,6 @@
     '</span>';
   }
 
-  // Small decorative sparkle/dot accents (Enactus-style illustration flair) that sit in the
-  // empty corners around each main icon, deliberately drifting past the 0-24 viewBox edge so
-  // they spill outside the round badge, the way the reference illustrations do.
   function starAt(cx, cy, s) {
     s = s || 2.2;
     var k = +(s * 0.35).toFixed(2);
@@ -673,37 +652,29 @@
     return '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="currentColor" stroke="none"/>';
   }
 
-  // One distinct, meaningful line-art icon per department (Lucide-style paths),
-  // keyed by the translation key used in CONFIG.leaderboard. A generic trophy
-  // is kept as a fallback for any department not explicitly mapped below.
   var DEPT_ICONS = {
-    // English Studies → open book (BookOpen) + sparkle flourish
     major_english: makeBadge(
       '<path d="M12 7v14"/>' +
       '<path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>' +
       starAt(24, -1, 2.1) + dotAt(-1, 23, 0.8)
     ),
-    // Psychology → brain (Brain) + sparkle flourish
     major_psych: makeBadge(
       '<path d="M9.5 2A3.5 3.5 0 0 0 6 5.5c0 .4.06.78.17 1.14A3.5 3.5 0 0 0 4 10a3.5 3.5 0 0 0 1.4 6.68A3.5 3.5 0 0 0 9 21a3.5 3.5 0 0 0 3.5-3.5V5.5A3.5 3.5 0 0 0 9.5 2z"/>' +
       '<path d="M14.5 2A3.5 3.5 0 0 1 18 5.5c0 .4-.06.78-.17 1.14A3.5 3.5 0 0 1 20 10a3.5 3.5 0 0 1-1.4 6.68A3.5 3.5 0 0 1 15 21a3.5 3.5 0 0 1-3.5-3.5V5.5A3.5 3.5 0 0 1 14.5 2z"/>' +
       starAt(23, 1, 2) + dotAt(0, 23, 0.8)
     ),
-    // French Studies → quill / feather (Feather) + sparkle flourish
     major_french: makeBadge(
       '<path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/>' +
       '<path d="M16 8 2 22"/>' +
       '<path d="M17.5 15H9"/>' +
       starAt(2, 1, 1.9) + dotAt(22, 21, 0.8)
     ),
-    // Geography → globe (Globe) + sparkle flourish
     major_geo: makeBadge(
       '<circle cx="12" cy="12" r="10"/>' +
       '<path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>' +
       '<path d="M2 12h20"/>' +
       starAt(23, 1, 2) + dotAt(0, 23, 0.8)
     ),
-    // Event Management → calendar (Calendar) + sparkle flourish
     dept_event: makeBadge(
       '<rect x="3" y="4" width="18" height="18" rx="2"/>' +
       '<path d="M16 2v4"/>' +
@@ -711,26 +682,22 @@
       '<path d="M3 10h18"/>' +
       starAt(24, 0, 1.9) + dotAt(-1, 24, 0.8)
     ),
-    // Marketing & Content Creation → megaphone (Megaphone) + sparkle flourish
     dept_marketing: makeBadge(
       '<path d="m3 11 18-5v12L3 14v-3z"/>' +
       '<path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>' +
       starAt(22, 2, 2) + dotAt(1, 22, 0.8)
     ),
-    // External Relations & Sponsorship → paper plane / outreach (Send) + sparkle flourish
     dept_external: makeBadge(
       '<path d="m22 2-7 20-4-9-9-4Z"/>' +
       '<path d="M22 2 11 13"/>' +
       starAt(21, 21, 2) + dotAt(2, 2, 0.8)
     ),
-    // Project Management & Social Innovation → target (Target) + sparkle flourish
     dept_pm: makeBadge(
       '<circle cx="12" cy="12" r="10"/>' +
       '<circle cx="12" cy="12" r="6"/>' +
       '<circle cx="12" cy="12" r="2"/>' +
       starAt(23, 1, 2) + dotAt(1, 23, 0.8)
     ),
-    // Academic year rows → graduation cap (GraduationCap) + sparkle flourish, shared across S1/S3/S5
     year_s1: makeBadge(
       '<path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/>' +
       '<path d="M22 10v6"/>' +
@@ -754,8 +721,7 @@
       pageTitle: "Enactus FLSH Ain Chock — Recruitment Form",
       subtitle: "Recruitment Form",
       slogan: "Join us to create social impact through entrepreneurial action.",
-      announcementTitle: "✨ Step into the spotlight! Showcase your art and secure your spot in the University Week of Art & Culture.",
-      announcementCta: "Register Now 🚀",
+      announcementTitle: "Register for the University Week of Art & Culture",
       urgencyText: "🚨 Only {n} spots left to reach our quota for this season!",
       days: "Days", hours: "Hours", minutes: "Minutes", seconds: "Seconds",
       countdownExpired: "⛔ The registration deadline has passed.",
@@ -842,8 +808,7 @@
       pageTitle: "Enactus FLSH Ain Chock — استمارة التسجيل",
       subtitle: "استمارة التسجيل",
       slogan: "انضم إلينا لخلق أثر اجتماعي من خلال العمل الريادي.",
-      announcementTitle: "✨ اصنع بصمتك الخاصة! اعرض فنك وتألق في الأسبوع الجامعي للفن والثقافة.",
-      announcementCta: "سجل الآن 🚀",
+      announcementTitle: "تسجل في الأسبوع الجامعي للفن والثقافة",
       urgencyText: "🚨 تبقى {n} مقعدا فقط للوصول إلى حصتنا لهذا الموسم!",
       days: "أيام", hours: "ساعات", minutes: "دقائق", seconds: "ثواني",
       countdownExpired: "⛔ لقد انتهى الموعد النهائي للتسجيل.",
@@ -930,8 +895,7 @@
       pageTitle: "Enactus FLSH Ain Chock — Formulaire de recrutement",
       subtitle: "Formulaire de recrutement",
       slogan: "Rejoignez-nous pour créer un impact social grâce à l'action entrepreneuriale.",
-      announcementTitle: "✨ Entrez sous les projecteurs ! Participez à la Semaine de l'Art et de la Culture et révélez votre talent.",
-      announcementCta: "S'inscrire maintenant 🚀",
+      announcementTitle: "Inscrivez-vous à la Semaine Universitaire de l'Art et de la Culture",
       urgencyText: "🚨 Il ne reste que {n} places pour atteindre notre quota de cette saison !",
       days: "Jours", hours: "Heures", minutes: "Minutes", seconds: "Secondes",
       countdownExpired: "⛔ La date limite d'inscription est dépassée.",
@@ -1024,6 +988,16 @@
     return s;
   }
 
+  // Slim marquee: the text is repeated 8x (4 copies per half) so the -50% / +50% shift
+  // loops seamlessly even on wide screens. aria-label keeps it readable for screen readers.
+  function renderAnnouncement() {
+    var track = document.getElementById("announceTrack");
+    var txt = t("announcementTitle");
+    var item = '<span class="announce-item">✨ ' + txt + '</span>';
+    track.innerHTML = new Array(9).join(item);
+    document.getElementById("announcementBanner").setAttribute("aria-label", txt);
+  }
+
   function applyTranslations(lang) {
     currentLang = lang;
     document.documentElement.lang = lang;
@@ -1032,11 +1006,9 @@
 
     document.getElementById("subtitleText").textContent = t("subtitle");
     document.getElementById("sloganText").textContent = t("slogan");
-    document.getElementById("announcementTitle").textContent = t("announcementTitle");
-    var annCta = document.getElementById("announcementCta");
-    annCta.textContent = t("announcementCta");
+    renderAnnouncement();
 
-    updateSpotsUI(); // sets progressLabel, progressSubtext and the bar width together
+    updateSpotsUI();
 
     document.getElementById("leaderboardTitle").textContent = t("leaderboardTitle");
     document.getElementById("genderTitle").textContent = t("genderTitle");
@@ -1116,9 +1088,6 @@
     renderStatList("yearList", CONFIG.academicYear);
   }
 
-  // FAQ accordion: one open item at a time. Rebuilt on every language switch so
-  // questions/answers stay in sync with the active language; re-opens nothing
-  // (starts collapsed) after a rebuild, which also happens on first render.
   var FAQ_KEYS = ["faq1", "faq2", "faq3", "faq4", "faq5", "faq6"];
   var CHEVRON_SVG = '<svg class="faq-chevron flex-shrink-0" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0F172A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
 
@@ -1160,7 +1129,6 @@
     });
   }
 
-  // Gender split bars/numbers: 0 before the reveal animation has played, real values after.
   function renderGenderStats() {
     var f = statsRevealed ? CONFIG.gender.female : 0;
     var m = statsRevealed ? CONFIG.gender.male : 0;
@@ -1178,8 +1146,6 @@
   }
 
   // ---- Registration open/closed state ----
-  // The countdown timer has been removed: registration is now permanently closed via
-  // CONFIG.isFull (see the announcement banner + waitlist mode at the top of this file).
   function renderRegistrationState() {
     var closed = CONFIG.isFull;
     document.getElementById("openFormSection").classList.toggle("hidden", closed);
@@ -1187,23 +1153,13 @@
   }
   renderRegistrationState();
 
-  // ==================================================================================
   // ---- Live stats reveal: smooth count-up numbers + progress-bar fill on scroll ----
-  // ==================================================================================
-  // Runs ONCE (guarded by statsRevealed), and only once the visitor has actually
-  // scrolled the stats section a good way into view (see the IntersectionObserver
-  // config below) — never immediately on page load just because the section happens
-  // to be present in the DOM. The department bars fill in one after another with a
-  // short stagger so the sequence reads as a deliberate, watchable reveal rather than
-  // everything jumping at once.
-  var STATS_ANIM_MS = 2500;       // 2.5s count-up duration for every number/percentage
-  var LEADER_STAGGER_MS = 150;    // delay between each department bar starting its reveal
+  var STATS_ANIM_MS = 2500;
+  var LEADER_STAGGER_MS = 150;
   var prefersReducedMotion = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
   function easeOutCubic(x) { return 1 - Math.pow(1 - x, 3); }
 
-  // Generic smooth count-up for a single number element (used for the staggered
-  // department bars, where each row animates independently on its own timer).
   function animateNumber(el, from, to, duration, suffix) {
     if (prefersReducedMotion) { el.textContent = to + suffix; return; }
     var startTime = null;
@@ -1233,13 +1189,10 @@
     var leaderTargets = [];
     leaderPercentEls.forEach(function (el) { leaderTargets.push(parseInt(el.getAttribute("data-target"), 10) || 0); });
 
-    // Main progress bar + gender bars start together (no stagger needed here).
     document.getElementById("progressFill").style.width = targetPercent + "%";
     document.getElementById("genderFillF").style.width = targetFemale + "%";
     document.getElementById("genderFillM").style.width = targetMale + "%";
 
-    // Department bars: staggered, one after another, each with its own bar-fill +
-    // its own independent count-up so the sequence visibly cascades down the list.
     leaderFillEls.forEach(function (fillEl, i) {
       var target = leaderTargets[i];
       var percentEl = leaderPercentEls[i];
@@ -1257,9 +1210,6 @@
       document.getElementById("genderPercentM").textContent = targetMale + "%";
     }
 
-    // Respect the visitor's OS-level "reduce motion" preference: snap straight to the
-    // final numbers, let the bars fill instantly too (the CSS media query above already
-    // strips the width transition in that case).
     if (prefersReducedMotion) { setFinalNumbers(); return; }
 
     var startTime = null;
@@ -1279,7 +1229,7 @@
       if (progress < 1) {
         requestAnimationFrame(frame);
       } else {
-        setFinalNumbers(); // snap to exact integers at the very end
+        setFinalNumbers();
       }
     }
     requestAnimationFrame(frame);
@@ -1288,10 +1238,6 @@
   var statsRevealTargets = [document.getElementById("progressSection"), document.getElementById("statsSection")].filter(Boolean);
 
   if ("IntersectionObserver" in window) {
-    // threshold 0.4 + a negative bottom rootMargin: the section must genuinely be
-    // scrolled ~40% into the viewport before the reveal fires — so on page load, a
-    // section that merely peeks in at the bottom edge of the screen will NOT trigger
-    // it immediately; the visitor has to actually scroll for it to play.
     var statsObserver = new IntersectionObserver(
       function (entries) {
         for (var i = 0; i < entries.length; i++) {
@@ -1306,7 +1252,6 @@
     );
     statsRevealTargets.forEach(function (el) { statsObserver.observe(el); });
   } else {
-    // No IntersectionObserver support (very old browser): just reveal on load.
     revealStats();
   }
 
@@ -1334,7 +1279,6 @@
   var mainRequired = ["fullName", "phone", "major", "year", "whyJoin"];
   wireLiveClear(mainRequired);
 
-  // Department chips: max 2 selections, with live visual state
   var deptCheckboxes = document.querySelectorAll(".dept-checkbox");
   var MAX_DEPTS = 2;
   function updateDeptChipsState() {
@@ -1404,9 +1348,6 @@
   }
 
   // ---- Shared FormSubmit AJAX submission ----
-  // Any seat-count change is handled by the caller BEFORE this runs (see mainForm's
-  // submit handler below) — this function only ever takes care of sending the data
-  // and showing the success modal / error message.
   function submitViaFormSubmit(form, msgElId, onSuccessKey) {
     var btn = form.querySelector('button[type="submit"]');
     var msgEl = document.getElementById(msgElId);
@@ -1429,22 +1370,15 @@
   }
 
   mainForm.addEventListener("submit", function (e) {
-    // Stop the browser's native full-page-reload submission immediately.
     e.preventDefault();
     if (!validateMain()) return;
-    // Official registration form: the moment the click is valid, take 1 seat off
-    // the remaining count, persist it to localStorage, and refresh every on-screen
-    // number/progress-bar right away — the visitor sees this instantly, with no
-    // need to wait for the network request below to finish.
     decrementSpotsAndRefresh();
-    // Now actually send the application data in the background.
     submitViaFormSubmit(mainForm, "mainSubmitMsg", "successText");
   });
 
   wlForm.addEventListener("submit", function (e) {
     e.preventDefault();
     if (!validateWaitlist()) return;
-    // Waiting list form never touches the seat counter — it's a separate list.
     submitViaFormSubmit(wlForm, "wlSubmitMsg", "successWaitlistText");
   });
 
@@ -1457,8 +1391,6 @@
     modal.classList.add("flex");
     document.body.style.overflow = "hidden";
     document.getElementById("modalClose").focus();
-    // Small celebratory burst — skipped if the CDN script failed to load (e.g. offline)
-    // or the visitor has asked the OS for reduced motion.
     if (typeof confetti === "function" && !prefersReducedMotion) {
       confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
     }
@@ -1473,24 +1405,20 @@
   document.getElementById("modalBackdrop").addEventListener("click", closeModal);
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModal(); });
 
-  // ---- Live activity toast: rotates a random bilingual "someone just joined" message
-  // every 12–18s, stays visible 4s, then fades out. Purely cosmetic social proof — no
-  // real data behind it. Paused while the tab is hidden so it never queues up a burst
-  // of toasts the visitor comes back to, and skipped entirely under reduced motion.
+  // ---- Live activity toast ----
   var TOAST_KEYS = ["toast1", "toast2", "toast3", "toast4"];
   var liveToastEl = document.getElementById("liveToast");
   var liveToastTextEl = document.getElementById("liveToastText");
   var liveToastCloseBtn = document.getElementById("liveToastClose");
   var toastHideTimer = null;
   var toastScheduleTimer = null;
-  var toastManuallyClosed = false;
 
   function showRandomToast() {
     if (document.hidden) return;
     var key = TOAST_KEYS[Math.floor(Math.random() * TOAST_KEYS.length)];
     liveToastTextEl.textContent = t(key);
     liveToastEl.classList.remove("hidden");
-    void liveToastEl.offsetWidth; // force reflow so the opacity transition actually plays
+    void liveToastEl.offsetWidth;
     liveToastEl.classList.remove("opacity-0");
     liveToastEl.classList.add("opacity-100");
     clearTimeout(toastHideTimer);
@@ -1500,11 +1428,11 @@
   function hideToast() {
     liveToastEl.classList.remove("opacity-100");
     liveToastEl.classList.add("opacity-0");
-    setTimeout(function () { liveToastEl.classList.add("hidden"); }, 500); // matches duration-500
+    setTimeout(function () { liveToastEl.classList.add("hidden"); }, 500);
   }
 
   function scheduleNextToast() {
-    var delay = 12000 + Math.random() * 6000; // 12–18s
+    var delay = 12000 + Math.random() * 6000;
     toastScheduleTimer = setTimeout(function () {
       showRandomToast();
       scheduleNextToast();
